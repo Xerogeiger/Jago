@@ -12,7 +12,7 @@ bool Jago::StringEquals(const std::string_view& left, const std::string_view& ri
     if(left.length() != right.length())
         return false;
     if(left.length() == 0) //Since the right and left strings have the same length if left is empty so is right
-        return false;
+        return true;
 
     for(uint32_t i = 0; i < left.length(); i++) {
         if(left[i] != right[i])

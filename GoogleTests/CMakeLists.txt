@@ -1,39 +1,9 @@
-# Note: CMake support is community-based. The maintainers do not use CMake
-# internally.
+project(Google_Tests)
 
-cmake_minimum_required(VERSION 3.5)
+add_subdirectory(lib)
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ..)
 
-if (POLICY CMP0048)
-  cmake_policy(SET CMP0048 NEW)
-endif (POLICY CMP0048)
+add_library(JagoLib ../jago/JagoUtils.cpp)
 
-if (POLICY CMP0069)
-  cmake_policy(SET CMP0069 NEW)
-endif (POLICY CMP0069)
-
-if (POLICY CMP0077)
-  cmake_policy(SET CMP0077 NEW)
-endif (POLICY CMP0077)
-
-project(googletest-distribution)
-set(GOOGLETEST_VERSION 1.12.1)
-
-if(NOT CYGWIN AND NOT MSYS AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL QNX)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
-
-enable_testing()
-
-include(CMakeDependentOption)
-include(GNUInstallDirs)
-
-#Note that googlemock target already builds googletest
-option(BUILD_GMOCK "Builds the googlemock subproject" ON)
-option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" ON)
-option(GTEST_HAS_ABSL "Use Abseil and RE2. Requires Abseil and RE2 to be separately added to the build." OFF)
-
-if(BUILD_GMOCK)
-  add_subdirectory( googlemock )
-else()
-  add_subdirectory( googletest )
-endif()
+add_executable(Google_Tests_Run tests/JagoUtilsTest.cpp)
+target_link_libraries(Google_Tests_Run JagoLib gtest gtest_main)
