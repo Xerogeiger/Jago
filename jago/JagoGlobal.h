@@ -15,109 +15,111 @@ namespace Jago {
     [[maybe_unused]] const std::string DefaultIndexerOpen = "[";
     [[maybe_unused]] const std::string DefaultIndexerClose = "]";
 
-    [[maybe_unused]] const JagoOperator ParenthesisOpenOperator = JagoOperator{"(", OperatorType::ParenthesisOpen, OperatorUsage::EitherSideUnary, 100};
-    [[maybe_unused]] const JagoOperator ParenthesisCloseOperator = JagoOperator{")", OperatorType::ParenthesisClose, OperatorUsage::EitherSideUnary, 100};
+    [[maybe_unused]] const Operator::JagoOperator ParenthesisOpenOperator = Operator::JagoOperator{"(", Operator::OperatorType::ParenthesisOpen,
+                                                                               Operator::OperatorUsage::EitherSideUnary, 100};
+    [[maybe_unused]] const Operator::JagoOperator ParenthesisCloseOperator = Operator::JagoOperator{")", Operator::OperatorType::ParenthesisClose,
+                                                                                Operator::OperatorUsage::EitherSideUnary, 100};
 
-    [[maybe_unused]] const std::vector<JagoOperator> DefaultJagoOperators = {
-            JagoOperator{"=", OperatorType::Assignment, OperatorUsage::Binary, 1},
-            JagoOperator{"+=", OperatorType::AdditionAssignment, OperatorUsage::Binary, 1},
-            JagoOperator{"-=", OperatorType::SubtractionAssignment, OperatorUsage::Binary, 1},
-            JagoOperator{"*=", OperatorType::MultiplicationAssigment, OperatorUsage::Binary, 1},
-            JagoOperator{"/=", OperatorType::DivisionAssignment, OperatorUsage::Binary, 1},
-            JagoOperator{"%=", OperatorType::ModulusAssignment, OperatorUsage::Binary, 1},
-            JagoOperator{"**=", OperatorType::PowerOfAssignment, OperatorUsage::Binary, 1},
+    [[maybe_unused]] const std::vector<Operator::JagoOperator> DefaultJagoOperators = {
+            Operator::JagoOperator{"=", Operator::OperatorType::Assignment, Operator::OperatorUsage::Binary, 1},
+            Operator::JagoOperator{"+=", Operator::OperatorType::AdditionAssignment, Operator::OperatorUsage::Binary, 1},
+            Operator::JagoOperator{"-=", Operator::OperatorType::SubtractionAssignment, Operator::OperatorUsage::Binary, 1},
+            Operator::JagoOperator{"*=", Operator::OperatorType::MultiplicationAssigment, Operator::OperatorUsage::Binary, 1},
+            Operator::JagoOperator{"/=", Operator::OperatorType::DivisionAssignment, Operator::OperatorUsage::Binary, 1},
+            Operator::JagoOperator{"%=", Operator::OperatorType::ModulusAssignment, Operator::OperatorUsage::Binary, 1},
+            Operator::JagoOperator{"**=", Operator::OperatorType::PowerOfAssignment, Operator::OperatorUsage::Binary, 1},
 
-            JagoOperator{"||", OperatorType::LogicalOr, OperatorUsage::Binary, 3},
+            Operator::JagoOperator{"||", Operator::OperatorType::LogicalOr, Operator::OperatorUsage::Binary, 3},
 
-            JagoOperator{"&&", OperatorType::LogicalAnd, OperatorUsage::Binary, 4},
+            Operator::JagoOperator{"&&", Operator::OperatorType::LogicalAnd, Operator::OperatorUsage::Binary, 4},
 
-            JagoOperator{"|", OperatorType::BitwiseOr, OperatorUsage::Binary, 5},
+            Operator::JagoOperator{"|", Operator::OperatorType::BitwiseOr, Operator::OperatorUsage::Binary, 5},
 
-            JagoOperator{"^", OperatorType::BitwiseXor, OperatorUsage::Binary, 6},
+            Operator::JagoOperator{"^", Operator::OperatorType::BitwiseXor, Operator::OperatorUsage::Binary, 6},
 
-            JagoOperator{"&", OperatorType::BitwiseAnd, OperatorUsage::Binary, 7},
+            Operator::JagoOperator{"&", Operator::OperatorType::BitwiseAnd, Operator::OperatorUsage::Binary, 7},
 
-            JagoOperator{"==", OperatorType::EqualTo, OperatorUsage::Binary, 8},
-            JagoOperator{"!=", OperatorType::NotEqualTo, OperatorUsage::Binary, 8},
+            Operator::JagoOperator{"==", Operator::OperatorType::EqualTo, Operator::OperatorUsage::Binary, 8},
+            Operator::JagoOperator{"!=", Operator::OperatorType::NotEqualTo, Operator::OperatorUsage::Binary, 8},
 
-            JagoOperator{"<", OperatorType::LessThan, OperatorUsage::Binary, 9},
-            JagoOperator{"<=", OperatorType::LessThanOrEqualTo, OperatorUsage::Binary, 9},
-            JagoOperator{">", OperatorType::GreaterThan, OperatorUsage::Binary, 9},
-            JagoOperator{">=", OperatorType::GreaterThanOrEqualTo, OperatorUsage::Binary, 9},
+            Operator::JagoOperator{"<", Operator::OperatorType::LessThan, Operator::OperatorUsage::Binary, 9},
+            Operator::JagoOperator{"<=", Operator::OperatorType::LessThanOrEqualTo, Operator::OperatorUsage::Binary, 9},
+            Operator::JagoOperator{">", Operator::OperatorType::GreaterThan, Operator::OperatorUsage::Binary, 9},
+            Operator::JagoOperator{">=", Operator::OperatorType::GreaterThanOrEqualTo, Operator::OperatorUsage::Binary, 9},
 
-            JagoOperator{"<<", OperatorType::BitwiseLeftShift, OperatorUsage::Binary, 10},
-            JagoOperator{">>", OperatorType::BitwiseRightShiftWithSign, OperatorUsage::Binary, 10},
-            JagoOperator{">>>", OperatorType::BitwiseRightShiftWithoutSign, OperatorUsage::Binary, 10},
+            Operator::JagoOperator{"<<", Operator::OperatorType::BitwiseLeftShift, Operator::OperatorUsage::Binary, 10},
+            Operator::JagoOperator{">>", Operator::OperatorType::BitwiseRightShiftWithSign, Operator::OperatorUsage::Binary, 10},
+            Operator::JagoOperator{">>>", Operator::OperatorType::BitwiseRightShiftWithoutSign, Operator::OperatorUsage::Binary, 10},
 
-            JagoOperator{"+", OperatorType::Addition, OperatorUsage::Binary, 11},
-            JagoOperator{"-", OperatorType::Subtraction, OperatorUsage::Binary, 11},
+            Operator::JagoOperator{"+", Operator::OperatorType::Addition, Operator::OperatorUsage::Binary, 11},
+            Operator::JagoOperator{"-", Operator::OperatorType::Subtraction, Operator::OperatorUsage::Binary, 11},
 
-            JagoOperator{"*", OperatorType::Multiplication, OperatorUsage::Binary, 12},
-            JagoOperator{"/", OperatorType::Division, OperatorUsage::Binary, 12},
-            JagoOperator{"%", OperatorType::Modulus, OperatorUsage::Binary, 12},
+            Operator::JagoOperator{"*", Operator::OperatorType::Multiplication, Operator::OperatorUsage::Binary, 12},
+            Operator::JagoOperator{"/", Operator::OperatorType::Division, Operator::OperatorUsage::Binary, 12},
+            Operator::JagoOperator{"%", Operator::OperatorType::Modulus, Operator::OperatorUsage::Binary, 12},
 
-            JagoOperator{"**", OperatorType::PowerOf, OperatorUsage::Binary, 13},
+            Operator::JagoOperator{"**", Operator::OperatorType::PowerOf, Operator::OperatorUsage::Binary, 13},
 
-            JagoOperator{"~", OperatorType::UnaryBitwiseComplement, OperatorUsage::LeftSideUnary, 14},
-            JagoOperator{"!", OperatorType::UnaryLogicalNegation, OperatorUsage::LeftSideUnary, 14},
-            JagoOperator{"++", OperatorType::UnaryPreIncrement, OperatorUsage::LeftSideUnary, 14},
-            JagoOperator{"--", OperatorType::UnaryPreDecrement, OperatorUsage::LeftSideUnary, 14},
-            JagoOperator{"-", OperatorType::UnaryMinus, OperatorUsage::LeftSideUnary, 14},
-            JagoOperator{"+", OperatorType::UnaryPlus, OperatorUsage::LeftSideUnary, 14},
+            Operator::JagoOperator{"~", Operator::OperatorType::UnaryBitwiseComplement, Operator::OperatorUsage::LeftSideUnary, 14},
+            Operator::JagoOperator{"!", Operator::OperatorType::UnaryLogicalNegation, Operator::OperatorUsage::LeftSideUnary, 14},
+            Operator::JagoOperator{"++", Operator::OperatorType::UnaryPreIncrement, Operator::OperatorUsage::LeftSideUnary, 14},
+            Operator::JagoOperator{"--", Operator::OperatorType::UnaryPreDecrement, Operator::OperatorUsage::LeftSideUnary, 14},
+            Operator::JagoOperator{"-", Operator::OperatorType::UnaryMinus, Operator::OperatorUsage::LeftSideUnary, 14},
+            Operator::JagoOperator{"+", Operator::OperatorType::UnaryPlus, Operator::OperatorUsage::LeftSideUnary, 14},
 
-            JagoOperator{"++", OperatorType::UnaryPostIncrement, OperatorUsage::RightSideUnary, 15},
-            JagoOperator{"--", OperatorType::UnaryPostDecrement, OperatorUsage::RightSideUnary, 15},
+            Operator::JagoOperator{"++", Operator::OperatorType::UnaryPostIncrement, Operator::OperatorUsage::RightSideUnary, 15},
+            Operator::JagoOperator{"--", Operator::OperatorType::UnaryPostDecrement, Operator::OperatorUsage::RightSideUnary, 15},
 
-            JagoOperator{".", OperatorType::MemberSelection, OperatorUsage::Binary, 16}
+            Operator::JagoOperator{".", Operator::OperatorType::MemberSelection, Operator::OperatorUsage::Binary, 16}
     };
 
-    [[maybe_unused]] const JagoKeyword* const NewObjectKeyword =
+    [[maybe_unused]] const JagoKeyword *const NewObjectKeyword =
             new JagoKeyword("new", KeywordType::CreationDeclaration);
 
-    [[maybe_unused]] const JagoKeyword* const PublicVisibilityModifier =
-            new JagoKeyword("public", KeywordType::VisibilityModifier);
-    [[maybe_unused]] const JagoKeyword* const PrivateVisibilityModifier =
-            new JagoKeyword("private", KeywordType::VisibilityModifier);
-    [[maybe_unused]] const JagoKeyword* const ProtectedVisibilityModifier =
-            new JagoKeyword("protected", KeywordType::VisibilityModifier);
-    [[maybe_unused]] const JagoKeyword* const DefaultVisibilityModifier =
-            new JagoKeyword("default", KeywordType::VisibilityModifier);
+    [[maybe_unused]] const JagoKeyword *const PublicExpressionModifier =
+            new JagoKeyword("public", KeywordType::ExpressionModifier);
+    [[maybe_unused]] const JagoKeyword *const PrivateExpressionModifier =
+            new JagoKeyword("private", KeywordType::ExpressionModifier);
+    [[maybe_unused]] const JagoKeyword *const ProtectedExpressionModifier =
+            new JagoKeyword("protected", KeywordType::ExpressionModifier);
+    [[maybe_unused]] const JagoKeyword *const DefaultExpressionModifier =
+            new JagoKeyword("default", KeywordType::ExpressionModifier);
 
-    [[maybe_unused]] const JagoKeyword* const ForStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const ForStatementKeyword =
             new JagoKeyword("for", KeywordType::StatementDeclaration);
-    [[maybe_unused]] const JagoKeyword* const IfStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const IfStatementKeyword =
             new JagoKeyword("if", KeywordType::StatementDeclaration);
-    [[maybe_unused]] const JagoKeyword* const ElseStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const ElseStatementKeyword =
             new JagoKeyword("else", KeywordType::StatementDeclaration);
-    [[maybe_unused]] const JagoKeyword* const SwitchStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const SwitchStatementKeyword =
             new JagoKeyword("switch", KeywordType::StatementDeclaration);
-    [[maybe_unused]] const JagoKeyword* const CaseStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const CaseStatementKeyword =
             new JagoKeyword("case", KeywordType::StatementDeclaration);
-    [[maybe_unused]] const JagoKeyword* const TryStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const TryStatementKeyword =
             new JagoKeyword("try", KeywordType::StatementDeclaration);
-    [[maybe_unused]] const JagoKeyword* const CatchStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const CatchStatementKeyword =
             new JagoKeyword("catch", KeywordType::StatementDeclaration);
-    [[maybe_unused]] const JagoKeyword* const FinallyStatementKeyword =
+    [[maybe_unused]] const JagoKeyword *const FinallyStatementKeyword =
             new JagoKeyword("finally", KeywordType::StatementDeclaration);
 
-    [[maybe_unused]] const JagoKeyword* const ClassDeclarationKeyword =
+    [[maybe_unused]] const JagoKeyword *const ClassDeclarationKeyword =
             new JagoKeyword("class", KeywordType::TypeDeclaration);
-    [[maybe_unused]] const JagoKeyword* const InterfaceDeclarationKeyword =
+    [[maybe_unused]] const JagoKeyword *const InterfaceDeclarationKeyword =
             new JagoKeyword("interface", KeywordType::TypeDeclaration);
-    [[maybe_unused]] const JagoKeyword* const EnumDeclarationKeyword =
+    [[maybe_unused]] const JagoKeyword *const EnumDeclarationKeyword =
             new JagoKeyword("enum", KeywordType::TypeDeclaration);
 
-    [[maybe_unused]] const JagoKeyword* const AbstractDeclarationModifierKeyword =
-            new JagoKeyword("abstract", KeywordType::DeclarationModifier);
-    [[maybe_unused]] const JagoKeyword* const ConstDeclarationModifierKeyword =
-            new JagoKeyword("const", KeywordType::DeclarationModifier);
-    [[maybe_unused]] const JagoKeyword* const StaticDeclarationModifierKeyword =
-            new JagoKeyword("static", KeywordType::DeclarationModifier);
+    [[maybe_unused]] const JagoKeyword *const AbstractExpressionModifierKeyword =
+            new JagoKeyword("abstract", KeywordType::ExpressionModifier);
+    [[maybe_unused]] const JagoKeyword *const ConstExpressionModifierKeyword =
+            new JagoKeyword("const", KeywordType::ExpressionModifier);
+    [[maybe_unused]] const JagoKeyword *const StaticExpressionModifierKeyword =
+            new JagoKeyword("static", KeywordType::ExpressionModifier);
 
-    [[maybe_unused]] const JagoKeyword* const ImportDeclarationKeyword =
+    [[maybe_unused]] const JagoKeyword *const ImportDeclarationKeyword =
             new JagoKeyword("import", KeywordType::ImportDeclaration);
 
-    [[maybe_unused]] const std::vector<const JagoKeyword*> DefaultJagoKeywords {
+    [[maybe_unused]] const std::vector<const JagoKeyword *> DefaultJagoKeywords{
             NewObjectKeyword,
 
             ForStatementKeyword,
@@ -133,14 +135,14 @@ namespace Jago {
             InterfaceDeclarationKeyword,
             EnumDeclarationKeyword,
 
-            AbstractDeclarationModifierKeyword,
-            ConstDeclarationModifierKeyword,
-            StaticDeclarationModifierKeyword,
+            AbstractExpressionModifierKeyword,
+            ConstExpressionModifierKeyword,
+            StaticExpressionModifierKeyword,
 
-            PublicVisibilityModifier,
-            PrivateVisibilityModifier,
-            ProtectedVisibilityModifier,
-            DefaultVisibilityModifier,
+            PublicExpressionModifier,
+            PrivateExpressionModifier,
+            ProtectedExpressionModifier,
+            DefaultExpressionModifier,
 
             ImportDeclarationKeyword
     };

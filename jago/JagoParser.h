@@ -13,7 +13,7 @@
 namespace Jago {
     struct ParserSettings {
     public:
-        std::vector<JagoOperator> Operators;
+        std::vector<Operator::JagoOperator> Operators;
         std::vector<const JagoKeyword*> Keywords;
 
         char lineSeparator;

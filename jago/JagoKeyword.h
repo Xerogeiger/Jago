@@ -9,12 +9,11 @@
 
 namespace Jago {
     enum KeywordType {
-        VisibilityModifier,
+        ExpressionModifier,
         CreationDeclaration,
         TypeDeclaration,
         StatementDeclaration,
         ImportDeclaration,
-        DeclarationModifier
     };
 
     class JagoKeyword {

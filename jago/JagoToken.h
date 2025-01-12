@@ -5,26 +5,29 @@
 #ifndef JAGO_JAGOTOKEN_H
 #define JAGO_JAGOTOKEN_H
 
+#include <cstdint>
 #include <type_traits>
 #include <string_view>
 #include <iostream>
 
 namespace Jago {
-    enum JagoTokenType: std::uint8_t {
-        Keyword,
-        Name,
-        ScopeOpen,
-        ScopeClose,
-        Operator,
-        ParenthesisOpen,
-        ParenthesisClose,
-        IndexerOpen,
-        IndexerClose,
-        NumberLiteral,
-        StringLiteral,
-        CharacterLiteral,
-        StatementEnd
-    };
+    namespace Token {
+        enum JagoTokenType: uint8_t {
+            Keyword,
+            Name,
+            ScopeOpen,
+            ScopeClose,
+            Operator,
+            ParenthesisOpen,
+            ParenthesisClose,
+            IndexerOpen,
+            IndexerClose,
+            NumberLiteral,
+            StringLiteral,
+            CharacterLiteral,
+            StatementEnd
+        };
+    }
 
     const char* const JagoTokenTypeNames[] = {"Keyword", "Name", "ScopeOpen", "ScopeClose", "Operator", "ParenthesisOpen",
                                         "ParenthesisClose", "IndexerOpen", "IndexerClose", "NumberLiteral",
@@ -32,7 +35,7 @@ namespace Jago {
 
     struct JagoToken {
     public:
-        JagoTokenType TokenType;
+        Token::JagoTokenType TokenType;
         std::string TokenValue;
         int LineNumber;
 
