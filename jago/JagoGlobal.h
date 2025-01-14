@@ -119,32 +119,67 @@ namespace Jago {
     [[maybe_unused]] const JagoKeyword *const ImportDeclarationKeyword =
             new JagoKeyword("import", KeywordType::ImportDeclaration);
 
+    [[maybe_unused]] const JagoKeyword *const PrimitiveInt =
+            new JagoKeyword("int", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveLong =
+            new JagoKeyword("long", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveShort =
+            new JagoKeyword("short", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveByte =
+            new JagoKeyword("byte", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveChar =
+            new JagoKeyword("char", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveBoolean =
+            new JagoKeyword("boolean", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveFloat =
+            new JagoKeyword("float", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveDouble =
+            new JagoKeyword("double", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveVoid =
+            new JagoKeyword("void", KeywordType::PrimitiveType);
+
+
+    inline bool isPrimitiveType(std::string_view type) {
+        return type == "int" || type == "long" || type == "short" || type == "byte" || type == "char" ||
+               type == "boolean" || type == "float" || type == "double" || type == "void";
+    }
+
     [[maybe_unused]] const std::vector<const JagoKeyword *> DefaultJagoKeywords{
-            NewObjectKeyword,
+        NewObjectKeyword,
 
-            ForStatementKeyword,
-            IfStatementKeyword,
-            ElseStatementKeyword,
-            SwitchStatementKeyword,
-            CaseStatementKeyword,
-            TryStatementKeyword,
-            CatchStatementKeyword,
-            FinallyStatementKeyword,
+        ForStatementKeyword,
+        IfStatementKeyword,
+        ElseStatementKeyword,
+        SwitchStatementKeyword,
+        CaseStatementKeyword,
+        TryStatementKeyword,
+        CatchStatementKeyword,
+        FinallyStatementKeyword,
 
-            ClassDeclarationKeyword,
-            InterfaceDeclarationKeyword,
-            EnumDeclarationKeyword,
+        ClassDeclarationKeyword,
+        InterfaceDeclarationKeyword,
+        EnumDeclarationKeyword,
 
-            AbstractExpressionModifierKeyword,
-            ConstExpressionModifierKeyword,
-            StaticExpressionModifierKeyword,
+        AbstractExpressionModifierKeyword,
+        ConstExpressionModifierKeyword,
+        StaticExpressionModifierKeyword,
 
-            PublicExpressionModifier,
-            PrivateExpressionModifier,
-            ProtectedExpressionModifier,
-            DefaultExpressionModifier,
+        PublicExpressionModifier,
+        PrivateExpressionModifier,
+        ProtectedExpressionModifier,
+        DefaultExpressionModifier,
 
-            ImportDeclarationKeyword
+        ImportDeclarationKeyword,
+
+        PrimitiveInt,
+        PrimitiveLong,
+        PrimitiveShort,
+        PrimitiveByte,
+        PrimitiveChar,
+        PrimitiveBoolean,
+        PrimitiveFloat,
+        PrimitiveDouble,
+        PrimitiveVoid
     };
 }
 

@@ -16,7 +16,7 @@
 #include "../JagoGlobal.h"
 #include "../JagoBytecodes.h"
 #include "../exceptions/JagoCompilerException.h"
-#include "JagoType.h"
+#include "../PrimitiveTypes.h"
 
 namespace Jago {
     struct CompilerSettings {
