@@ -4,6 +4,8 @@
 #include "jago/JagoLexer.h"
 #include "jago/JagoParser.h"
 #include "jago/compiler/JagoCompiler.h"
+#include "jago/interpreter/JagoEvaluator.h"
+#include "jago/interpreter/JagoInterpreter.h"
 
 using namespace Jago;
 
@@ -15,15 +17,16 @@ int main() {
 
     auto tokens = parser.Parse(lexer.Lex(testString));
 
-    JagoCompiler compiler;
+    JagoInterpreter interpreter;
+    auto program = interpreter.interpret(tokens);
 
-    try {
-        for (auto &byteCode: compiler.Compile(tokens)) {
-            std::cout << (int) byteCode << std::endl;
-        }
-    } catch (Jago::JagoCompilerException& exception) {
-        std::cerr << "Compiler Exception: " << exception.what() << std::endl;
-    }
+    program->prettyPrint(std::cout, 0);
+
+    JagoEvaluator evaluator;
+
+    program->accept(evaluator);
+
+    std::cout << testString << std::endl;
 
     return 0;
 }

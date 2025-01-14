@@ -25,13 +25,14 @@ namespace Jago {
             NumberLiteral,
             StringLiteral,
             CharacterLiteral,
-            StatementEnd
+            StatementEnd,
+            PrimitiveType
         };
     }
 
     const char* const JagoTokenTypeNames[] = {"Keyword", "Name", "ScopeOpen", "ScopeClose", "Operator", "ParenthesisOpen",
                                         "ParenthesisClose", "IndexerOpen", "IndexerClose", "NumberLiteral",
-                                        "StringLiteral", "CharacterLiteral", "StatementEnd"};
+                                        "StringLiteral", "CharacterLiteral", "StatementEnd", "PrimitiveType"};
 
     struct JagoToken {
     public:

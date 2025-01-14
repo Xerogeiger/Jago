@@ -20,7 +20,7 @@ Jago::JagoCompiler::JagoCompiler() {
 struct CompiledVariable {
     int variableIndex;
     std::string_view name;
-    Jago::JagoType type;
+    Jago::PrimitiveTypes type;
 };
 
 struct Expression {
@@ -67,7 +67,7 @@ void ExpectNextToken(std::vector<Jago::JagoToken>::iterator cur, std::vector<Jag
         throw Jago::JagoCompilerException(message);
 }
 
-Jago::JagoType GetTypeByName(std::string& typeName) {
+Jago::PrimitiveTypes GetTypeByName(std::string& typeName) {
     if(Jago::StringEquals(typeName, "int")) {
         return Jago::INT;
     } else if(Jago::StringEquals(typeName, "long")) {
@@ -213,32 +213,32 @@ std::vector<uint8_t> Jago::JagoCompiler::Compile(std::vector<Jago::JagoToken> to
 
     for(auto & globalVariable : globalVariables) {
         switch (globalVariable.second.type) {
-            case JagoType::BYTE:
+            case PrimitiveTypes::BYTE:
                 compiledCode.push_back(Jago::ByteCode::DEFINE_VARIABLE_8);
                 AddStringToByteCode(compiledCode, globalVariable.second.name);
                 AddIntToByteCode(compiledCode, globalVariable.second.variableIndex);
                 break;
-            case JagoType::SHORT:
+            case PrimitiveTypes::SHORT:
                 compiledCode.push_back(Jago::ByteCode::DEFINE_VARIABLE_16);
                 AddStringToByteCode(compiledCode, globalVariable.second.name);
                 AddIntToByteCode(compiledCode, globalVariable.second.variableIndex);
                 break;
-            case JagoType::INT:
+            case PrimitiveTypes::INT:
                 compiledCode.push_back(Jago::ByteCode::DEFINE_VARIABLE_32);
                 AddStringToByteCode(compiledCode, globalVariable.second.name);
                 AddIntToByteCode(compiledCode, globalVariable.second.variableIndex);
                 break;
-            case JagoType::LONG:
+            case PrimitiveTypes::LONG:
                 compiledCode.push_back(Jago::ByteCode::DEFINE_VARIABLE_64);
                 AddStringToByteCode(compiledCode, globalVariable.second.name);
                 AddIntToByteCode(compiledCode, globalVariable.second.variableIndex);
                 break;
-            case JagoType::FLOAT:
+            case PrimitiveTypes::FLOAT:
                 compiledCode.push_back(Jago::ByteCode::DEFINE_VARIABLE_32);
                 AddStringToByteCode(compiledCode, globalVariable.second.name);
                 AddIntToByteCode(compiledCode, globalVariable.second.variableIndex);
                 break;
-            case JagoType::DOUBLE:
+            case PrimitiveTypes::DOUBLE:
                 compiledCode.push_back(Jago::ByteCode::DEFINE_VARIABLE_64);
                 AddStringToByteCode(compiledCode, globalVariable.second.name);
                 AddIntToByteCode(compiledCode, globalVariable.second.variableIndex);

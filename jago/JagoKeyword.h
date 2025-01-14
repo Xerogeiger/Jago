@@ -14,6 +14,7 @@ namespace Jago {
         TypeDeclaration,
         StatementDeclaration,
         ImportDeclaration,
+        PrimitiveType
     };
 
     class JagoKeyword {
