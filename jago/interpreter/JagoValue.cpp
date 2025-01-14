@@ -57,7 +57,46 @@ namespace Jago {
                 return value.longValue;
             case INT:
                 return value.intValue;
-            default: return 0;
+            default:
+                return 0;
         }
+    }
+    std::ostream &operator<<(std::ostream &out, const JagoValue &value) {
+        switch (value.type) {
+            case PrimitiveTypes::STRING:
+                out << std::string("String Value: ") << *value.value.stringValue;
+                break;
+            case PrimitiveTypes::DOUBLE:
+                out << std::string("Double Value: ") << std::to_string(value.value.doubleValue);
+                break;
+            case PrimitiveTypes::FLOAT:
+                out << std::string("Float Value: ") << std::to_string(value.value.floatValue);
+                break;
+            case PrimitiveTypes::INT:
+                out << std::string("Int Value: ") << std::to_string(value.value.intValue);
+                break;
+            case PrimitiveTypes::LONG:
+                out << std::string("Long Value: ") << std::to_string(value.value.longValue);
+                break;
+            case PrimitiveTypes::SHORT:
+                out << std::string("Short Value: ") << std::to_string(value.value.shortValue);
+                break;
+            case PrimitiveTypes::BYTE:
+                out << std::string("Byte Value: ") << std::to_string(value.value.byteValue);
+                break;
+            case PrimitiveTypes::CHAR:
+                out << std::string("Char Value: ") << std::to_string(value.value.charValue);
+                break;
+            case PrimitiveTypes::BOOLEAN:
+                out << std::string("Bool Value: ") << std::string(value.value.boolValue ? "true" : "false");
+                break;
+            case PrimitiveTypes::VOID:
+                out << std::string("Void Value: ") << std::string("void");
+                break;
+            default:
+                out << std::string("null");
+        }
+
+        return out;
     }
 } // Jago

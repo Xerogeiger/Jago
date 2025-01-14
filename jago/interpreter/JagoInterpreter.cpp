@@ -44,42 +44,70 @@ namespace Jago {
         return nullptr;
     }
 
-    std::unique_ptr<Expression> JagoInterpreter::interpretExpression(std::vector<Jago::JagoToken> tokens,
-        int &index) const {
-        std::vector<JagoToken> operators;
-        std::stack<std::unique_ptr<Expression>> expressions; //All expressions in the current statement
+    std::unique_ptr<Expression> JagoInterpreter::interpretExpression(std::vector<Jago::JagoToken> tokens, int &index) const {
+        std::stack<JagoToken> operatorStack; // Operators
+        std::stack<std::unique_ptr<Expression>> expressionStack; // Expressions
 
+        // Define operator precedence
+        auto precedence = [](const std::string &op) -> int {
+            if (op == "+" || op == "-") return 1;  // Low precedence
+            if (op == "*" || op == "/") return 2;  // Medium precedence
+            if (op == "^") return 3;              // High precedence
+            return 0;                             // Unknown operator
+        };
+
+        // While not at the end of the statement
         while (tokens[index].TokenType != Token::JagoTokenType::StatementEnd) {
-            if (tokens[index].TokenType == Token::JagoTokenType::NumberLiteral) {
-                expressions.push(std::make_unique<Literal>(tokens[index].TokenValue));
-            } else if (tokens[index].TokenType == Token::JagoTokenType::StringLiteral) {
-                expressions.push(std::make_unique<Literal>(tokens[index].TokenValue));
-            } else if (tokens[index].TokenType == Token::JagoTokenType::CharacterLiteral) {
-                expressions.push(std::make_unique<Literal>(tokens[index].TokenValue));
+            if (tokens[index].TokenType == Token::JagoTokenType::NumberLiteral ||
+                tokens[index].TokenType == Token::JagoTokenType::StringLiteral ||
+                tokens[index].TokenType == Token::JagoTokenType::CharacterLiteral) {
+                // Push literals directly to the expression stack
+                expressionStack.push(std::make_unique<Literal>(tokens[index].TokenValue));
             } else if (tokens[index].TokenType == Token::JagoTokenType::Operator) {
-                operators.push_back(tokens[index]);
+                // While there is an operator on the stack with higher or equal precedence
+                while (!operatorStack.empty() &&
+                       precedence(operatorStack.top().TokenValue) >= precedence(tokens[index].TokenValue)) {
+                    auto op = operatorStack.top();
+                    operatorStack.pop();
+
+                    // Pop two expressions and create a BinaryExpression
+                    auto right = std::move(expressionStack.top());
+                    expressionStack.pop();
+
+                    auto left = std::move(expressionStack.top());
+                    expressionStack.pop();
+
+                    expressionStack.push(std::make_unique<BinaryExpression>(std::move(left), std::move(right), op.TokenValue));
+                }
+
+                // Push the current operator to the stack
+                operatorStack.push(tokens[index]);
             }
 
             index++;
         }
 
-        while (!operators.empty()) {
-            auto op = operators.back();
-            operators.pop_back();
+        // Process remaining operators
+        while (!operatorStack.empty()) {
+            auto op = operatorStack.top();
+            operatorStack.pop();
 
-            auto right = std::move(expressions.top());
-            expressions.pop();
+            // Pop two expressions and create a BinaryExpression
+            auto right = std::move(expressionStack.top());
+            expressionStack.pop();
 
-            auto left = std::move(expressions.top());
-            expressions.pop();
+            auto left = std::move(expressionStack.top());
+            expressionStack.pop();
 
-            expressions.push(std::make_unique<BinaryExpression>(std::move(left), std::move(right), op.TokenValue));
+            expressionStack.push(std::make_unique<BinaryExpression>(std::move(left), std::move(right), op.TokenValue));
         }
 
-        if (expressions.size() == 1) {
-            return std::move(expressions.top());
+        // The final expression on the stack is the result
+        if (expressionStack.size() == 1) {
+            return std::move(expressionStack.top());
         } else {
-            return nullptr;
+            return nullptr;  // Error case
         }
     }
+
 } // Jago

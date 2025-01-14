@@ -48,6 +48,12 @@ namespace Jago {
             } else {
                 result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() + right.asInt());
             }
+        } else if (op == "*") {
+            if (left == DOUBLE || right == DOUBLE) {
+                result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() * right.asDouble());
+            } else {
+                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() * right.asInt());
+            }
         }
     }
 
@@ -64,8 +70,13 @@ namespace Jago {
     }
 
     void JagoEvaluator::visit(Program &program) {
-        for (const auto &statement : program.statements) {
+        for (const auto &statement: program.statements) {
             statement->accept(*this);
         }
+    }
+    void JagoEvaluator::dump(std::ostream &out) const {
+        out << "Last Result: " << result << std::endl;
+
+        this->scope->dump(out);
     }
 } // Jago

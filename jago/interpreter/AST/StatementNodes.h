@@ -31,7 +31,7 @@ namespace Jago {
 
     class AssignmentStatement final : public Statement {
     public:
-        std::string_view variableName;
+        std::string variableName;
         std::unique_ptr<Expression> value;
 
         explicit AssignmentStatement(std::string_view variableName, std::unique_ptr<Expression> value)

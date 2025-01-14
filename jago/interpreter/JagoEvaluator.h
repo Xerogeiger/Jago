@@ -24,6 +24,8 @@ namespace Jago {
         void visit(ReturnStatement& returnStatement) override;
         void visit(AssignmentStatement &assignmentStatement) override;
         void visit(Program &program) override;
+
+        void dump(std::ostream& out) const;
     };
 } // Jago
 

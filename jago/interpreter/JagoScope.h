@@ -24,6 +24,8 @@ namespace Jago {
         void setVariable(std::string_view name, Jago::JagoValue value);
 
         void setFunction(std::string_view name, Jago::JagoMethod method);
+
+        void dump(std::ostream & out);
     };
 
 } // Jago

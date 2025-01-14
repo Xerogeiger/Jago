@@ -5,6 +5,7 @@
 #include "JagoScope.h"
 #include <string_view>
 #include <utility>
+#include <iostream>
 
 namespace Jago {
     Jago::JagoValue JagoScope::getVariable(const std::string_view name) {
@@ -31,5 +32,15 @@ namespace Jago {
 
     void JagoScope::setFunction(std::string_view name, Jago::JagoMethod method) {
         functions.insert_or_assign(name, std::move(method));
+    }
+
+    void JagoScope::dump(std::ostream &out) {
+        for (const auto& [name, value] : variables) {
+            out << "Variable: " << name << " = " << value << std::endl;
+        }
+
+        for (const auto& [name, method] : functions) {
+            out << "Function: " << name << std::endl;
+        }
     }
 } // Jago

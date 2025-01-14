@@ -93,6 +93,8 @@ namespace Jago {
         bool operator==(const PrimitiveTypes type) const {
             return this->type == type;
         }
+
+        friend std::ostream& operator<<(std::ostream& out, const JagoValue& value);
     };
 
 } // Jago
