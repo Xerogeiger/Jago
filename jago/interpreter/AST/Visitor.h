@@ -8,6 +8,7 @@
 namespace Jago {
 
     class Literal;
+    class Variable;
     class BinaryExpression;
     class UnaryExpression;
     class ReturnStatement;
@@ -19,6 +20,7 @@ namespace Jago {
         virtual ~Visitor() = default;
 
         virtual void visit(Literal& literal) = 0;
+        virtual void visit(Variable& variable) = 0;
         virtual void visit(BinaryExpression& binaryExpression) = 0;
         virtual void visit(UnaryExpression& unaryExpression) = 0;
         virtual void visit(ReturnStatement& returnStatement) = 0;

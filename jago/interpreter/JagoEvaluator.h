@@ -19,13 +19,14 @@ namespace Jago {
         explicit JagoEvaluator();
 
         void visit(Literal& literal) override;
+        void visit(Variable &variable) override;
         void visit(BinaryExpression& binaryExpression) override;
         void visit(UnaryExpression& unaryExpression) override;
         void visit(ReturnStatement& returnStatement) override;
         void visit(AssignmentStatement &assignmentStatement) override;
         void visit(Program &program) override;
 
-        void dump(std::ostream& out) const;
+        void dump(std::ostream &out) const;
     };
 } // Jago
 

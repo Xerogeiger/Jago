@@ -28,6 +28,18 @@ namespace Jago {
         std::string value;
     };
 
+    class Variable final : public Expression {
+    public:
+        explicit Variable(const std::string_view& value) : Expression(), name(value) {
+        }
+
+        void accept(Visitor& visitor) override;
+
+        void prettyPrint(std::ostream &out, int indent) const override;
+
+        std::string name;
+    };
+
     class BinaryExpression : public Expression {
     public:
         BinaryExpression(std::unique_ptr<Expression> left,

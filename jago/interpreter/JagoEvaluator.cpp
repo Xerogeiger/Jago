@@ -28,6 +28,9 @@ namespace Jago {
             result = JagoValue(Jago::PrimitiveTypes::INT, std::stoi(std::string(literal.value)));
         }
     }
+    void JagoEvaluator::visit(Variable &variable) {
+        result = scope->getVariable(variable.name);
+    }
 
     void JagoEvaluator::visit(BinaryExpression &binaryExpression) {
         binaryExpression.left->accept(*this);

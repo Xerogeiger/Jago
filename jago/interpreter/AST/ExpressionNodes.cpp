@@ -13,6 +13,10 @@ namespace Jago {
     void Literal::prettyPrint(std::ostream &out, int indent) const {
         out << std::string(indent, '\t') << "Literal: " << value << std::endl;
     }
+    void Variable::accept(Visitor &visitor) { visitor.visit(*this); }
+    void Variable::prettyPrint(std::ostream &out, int indent) const {
+        out << std::string(indent, '\t') << "Variable: " << name << std::endl;
+    }
 
     void BinaryExpression::accept(Visitor& visitor) {
         visitor.visit(*this);

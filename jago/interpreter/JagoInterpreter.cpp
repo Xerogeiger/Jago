@@ -63,10 +63,16 @@ namespace Jago {
                 tokens[index].TokenType == Token::JagoTokenType::CharacterLiteral) {
                 // Push literals directly to the expression stack
                 expressionStack.push(std::make_unique<Literal>(tokens[index].TokenValue));
+            } else if (tokens[index].TokenType == Token::JagoTokenType::Name) {
+                expressionStack.push(std::make_unique<Variable>(tokens[index].TokenValue));
             } else if (tokens[index].TokenType == Token::JagoTokenType::Operator) {
                 // While there is an operator on the stack with higher or equal precedence
                 while (!operatorStack.empty() &&
                        precedence(operatorStack.top().TokenValue) >= precedence(tokens[index].TokenValue)) {
+                    if (operatorStack.empty() || expressionStack.size() < 2) {
+                        throw std::runtime_error("Invalid state: operator or expression stack is empty");
+                    }
+
                     auto op = operatorStack.top();
                     operatorStack.pop();
 
@@ -89,6 +95,10 @@ namespace Jago {
 
         // Process remaining operators
         while (!operatorStack.empty()) {
+            if (operatorStack.empty() || expressionStack.size() < 2) {
+                throw std::runtime_error("Invalid state: operator or expression stack is empty");
+            }
+
             auto op = operatorStack.top();
             operatorStack.pop();
 
