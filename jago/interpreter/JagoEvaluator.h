@@ -12,6 +12,7 @@ namespace Jago {
 
     class JagoEvaluator final : public Visitor {
     protected:
+        std::string resultVariableName;
         JagoValue result = JagoValue(Jago::PrimitiveTypes::VOID, static_cast<void*>(nullptr));
         JagoScope* scope = nullptr;
 

@@ -4,6 +4,8 @@
 
 #include "JagoEvaluator.h"
 
+#include <iostream>
+
 #include "../PrimitiveTypes.h"
 #include "AST/ExpressionNodes.h"
 #include "AST/StatementNodes.h"
@@ -30,11 +32,13 @@ namespace Jago {
     }
     void JagoEvaluator::visit(Variable &variable) {
         result = scope->getVariable(variable.name);
+        resultVariableName = variable.name;
     }
 
     void JagoEvaluator::visit(BinaryExpression &binaryExpression) {
         binaryExpression.left->accept(*this);
         JagoValue left = result;
+        std::string leftVariableName = resultVariableName;
 
         binaryExpression.right->accept(*this);
         JagoValue right = result;
@@ -70,7 +74,7 @@ namespace Jago {
                 result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() / right.asInt());
             }
         } else if (op == "=") {
-            this->scope->setVariable(left.asString(), right);
+            this->scope->setVariable(leftVariableName, right);
         } else if (op == "%") {
             result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() % right.asInt());
         } else if (op == "==") {
