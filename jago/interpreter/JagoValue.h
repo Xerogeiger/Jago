@@ -94,6 +94,12 @@ namespace Jago {
             return this->type == type;
         }
 
+        bool operator==(const JagoValue &other) const;
+        bool operator>(const JagoValue &other) const;
+        bool operator<(const JagoValue &other) const;
+        bool operator>=(const JagoValue &other) const;
+        bool operator<=(const JagoValue &other) const;
+
         friend std::ostream& operator<<(std::ostream& out, const JagoValue& value);
     };
 

@@ -61,6 +61,113 @@ namespace Jago {
                 return 0;
         }
     }
+    bool JagoValue::operator==(const JagoValue &other) const {
+        if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
+            return false;
+        } else if (this->type != other.type) {
+            return false;
+        } else {
+            if (this->type == PrimitiveTypes::STRING) {
+                return *this->value.stringValue == *other.value.stringValue;
+            } else if (this->type == PrimitiveTypes::DOUBLE) {
+                return this->value.doubleValue == other.value.doubleValue;
+            } else if (this->type == PrimitiveTypes::INT) {
+                return this->value.intValue == other.value.intValue;
+            } else if (this->type == PrimitiveTypes::BOOLEAN) {
+                return this->value.boolValue == other.value.boolValue;
+            } else if (this->type == PrimitiveTypes::CHAR) {
+                return this->value.charValue == other.value.charValue;
+            } else {
+                return this->value.pointerValue == other.value.pointerValue;
+            }
+        }
+    }
+    bool JagoValue::operator>(const JagoValue &other) const {
+        if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
+            return false;
+        } else if (this->type != other.type) {
+            return false;
+        } else {
+            if (this->type == PrimitiveTypes::STRING) {
+                return *this->value.stringValue > *other.value.stringValue;
+            } else if (this->type == PrimitiveTypes::DOUBLE) {
+                return this->value.doubleValue > other.value.doubleValue;
+            } else if (this->type == PrimitiveTypes::INT) {
+                return this->value.intValue > other.value.intValue;
+            } else if (this->type == PrimitiveTypes::BOOLEAN) {
+                return this->value.boolValue > other.value.boolValue;
+            } else if (this->type == PrimitiveTypes::CHAR) {
+                return this->value.charValue > other.value.charValue;
+            } else {
+                return this->value.pointerValue > other.value.pointerValue;
+            }
+        }
+    }
+    bool JagoValue::operator<(const JagoValue &other) const {
+        if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
+            return false;
+        } else if (this->type != other.type) {
+            return false;
+        } else {
+            if (this->type == PrimitiveTypes::STRING) {
+                return *this->value.stringValue < *other.value.stringValue;
+            } else if (this->type == PrimitiveTypes::DOUBLE) {
+                return this->value.doubleValue < other.value.doubleValue;
+            } else if (this->type == PrimitiveTypes::INT) {
+                return this->value.intValue < other.value.intValue;
+            } else if (this->type == PrimitiveTypes::BOOLEAN) {
+                return this->value.boolValue < other.value.boolValue;
+            } else if (this->type == PrimitiveTypes::CHAR) {
+                return this->value.charValue < other.value.charValue;
+            } else {
+                return this->value.pointerValue < other.value.pointerValue;
+            }
+        }
+    }
+    bool JagoValue::operator>=(const JagoValue &other) const {
+        if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
+            return false;
+        } else if (this->type != other.type) {
+            return false;
+        } else {
+            if (this->type == PrimitiveTypes::STRING) {
+                return *this->value.stringValue >= *other.value.stringValue;
+            } else if (this->type == PrimitiveTypes::DOUBLE) {
+                return this->value.doubleValue >= other.value.doubleValue;
+            } else if (this->type == PrimitiveTypes::INT) {
+                return this->value.intValue >= other.value.intValue;
+            } else if (this->type == PrimitiveTypes::BOOLEAN) {
+                return this->value.boolValue >= other.value.boolValue;
+            } else if (this->type == PrimitiveTypes::CHAR) {
+                return this->value.charValue >= other.value.charValue;
+            } else {
+                return this->value.pointerValue >= other.value.pointerValue;
+            }
+        }
+    }
+
+    bool JagoValue::operator<=(const JagoValue &other) const {
+        if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
+            return false;
+        } else if (this->type != other.type) {
+            return false;
+        } else {
+            if (this->type == PrimitiveTypes::STRING) {
+                return *this->value.stringValue <= *other.value.stringValue;
+            } else if (this->type == PrimitiveTypes::DOUBLE) {
+                return this->value.doubleValue <= other.value.doubleValue;
+            } else if (this->type == PrimitiveTypes::INT) {
+                return this->value.intValue <= other.value.intValue;
+            } else if (this->type == PrimitiveTypes::BOOLEAN) {
+                return this->value.boolValue <= other.value.boolValue;
+            } else if (this->type == PrimitiveTypes::CHAR) {
+                return this->value.charValue <= other.value.charValue;
+            } else {
+                return this->value.pointerValue <= other.value.pointerValue;
+            }
+        }
+    }
+
     std::ostream &operator<<(std::ostream &out, const JagoValue &value) {
         switch (value.type) {
             case PrimitiveTypes::STRING:

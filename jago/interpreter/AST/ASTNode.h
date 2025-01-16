@@ -12,7 +12,7 @@ namespace Jago {
     public:
         virtual ~ASTNode() = default;
         virtual void accept(class Visitor& visitor) = 0;
-        virtual void prettyPrint(std::ostream& out, int indent = 0) const = 0;
+        virtual void prettyPrint(std::ostream& out, int indent) const = 0;
     };
 
     class Program : public ASTNode {

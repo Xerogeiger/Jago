@@ -4,6 +4,8 @@
 
 #include "JagoLexer.h"
 
+#include <format>
+
 #define AddWordToken(start, end) tokens.emplace_back(value.data() + start, end - start)
 
 namespace Jago {
@@ -43,11 +45,20 @@ namespace Jago {
         LexerSettings& lexerSettings = this->settings;
         LexerCommentSettings& commentSettings = lexerSettings.commentSettings;
 
+        bool isNumber = true;
+
         for(uint32_t i = 0; i < value.length(); i++) {
             char c = value[i];
-            if(IsSymbol(value, i, value.length(), commentSettings.lineCommentStart)) {
+            if((isNumber && c == '.') || Contains(lexerSettings.allowedWordCharacters, c)) {
+                if(wordStart == -1)
+                    wordStart = i;
+
+                if (!std::__format::__is_digit(c))
+                    isNumber = false;
+            } else if(IsSymbol(value, i, value.length(), commentSettings.lineCommentStart)) {
                 if(wordStart != -1) {
                     AddWordToken(wordStart, i);
+                    isNumber = true;
                     wordStart = -1;
                 }
 
@@ -65,6 +76,7 @@ namespace Jago {
             } else if(IsSymbol(value, i, value.length(), commentSettings.blockCommentStart)) {
                 if(wordStart != -1) {
                     AddWordToken(wordStart, i);
+                    isNumber = true;
                     wordStart = -1;
                 }
 
@@ -81,17 +93,16 @@ namespace Jago {
                 }
 
                 i += commentSettings.blockCommentEnd.length() - 1;
-            } else if(Contains(lexerSettings.allowedWordCharacters, c)) {
-                if(wordStart == -1)
-                    wordStart = i;
             } else if(Contains(lexerSettings.whitespaceCharacters, c)) {
                 if(wordStart != -1) {
                     AddWordToken(wordStart, i);
+                    isNumber = true;
                     wordStart = -1;
                 }
             } else {
                 if(wordStart != -1) {
                     AddWordToken(wordStart, i);
+                    isNumber = true;
                     wordStart = -1;
                 }
 

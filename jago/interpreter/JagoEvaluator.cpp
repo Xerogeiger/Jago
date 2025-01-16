@@ -57,6 +57,34 @@ namespace Jago {
             } else {
                 result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() * right.asInt());
             }
+        } else if (op == "-") {
+            if (left == DOUBLE || right == DOUBLE) {
+                result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() - right.asDouble());
+            } else {
+                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() - right.asInt());
+            }
+        } else if (op == "/") {
+            if (left == DOUBLE || right == DOUBLE) {
+                result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() / right.asDouble());
+            } else {
+                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() / right.asInt());
+            }
+        } else if (op == "=") {
+            this->scope->setVariable(left.asString(), right);
+        } else if (op == "%") {
+            result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() % right.asInt());
+        } else if (op == "==") {
+            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left == right);
+        } else if (op == "!=") {
+            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left != right);
+        } else if (op == ">") {
+            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left > right);
+        } else if (op == "<") {
+            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left < right);
+        } else if (op == ">=") {
+            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left >= right);
+        } else if (op == "<=") {
+            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left <= right);
         }
     }
 
