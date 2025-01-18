@@ -10,7 +10,7 @@
 using namespace Jago;
 
 int main() {
-    std::string testString = "int var = 3.3 + 4 * 5 + 3; var = var + 3;";
+    std::string testString = "int var = 3.3 + 4 * 5 + 3; var = var + 3; double x = 3.3; x = x + 3; string test = \"test\"";
 
     JagoLexer lexer;
     JagoParser parser;

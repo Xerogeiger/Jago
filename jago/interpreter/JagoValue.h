@@ -88,7 +88,9 @@ namespace Jago {
 
         [[nodiscard]] std::string asString() const;
         [[nodiscard]] double asDouble() const;
-        [[nodiscard]] int64_t asInt() const;
+        [[nodiscard]] int64_t asLong() const;
+        int32_t asInt() const;
+        JagoValue castToType(PrimitiveTypes type) const;
 
         bool operator==(const PrimitiveTypes type) const {
             return this->type == type;
@@ -99,6 +101,14 @@ namespace Jago {
         bool operator<(const JagoValue &other) const;
         bool operator>=(const JagoValue &other) const;
         bool operator<=(const JagoValue &other) const;
+
+        JagoValue &operator=(int value);
+        JagoValue &operator=(double value);
+        JagoValue &operator=(float value);
+        JagoValue &operator=(char value);
+        JagoValue &operator=(const std::string &value);
+        JagoValue &operator=(bool value);
+        JagoValue &operator=(int64_t value);
 
         friend std::ostream& operator<<(std::ostream& out, const JagoValue& value);
     };

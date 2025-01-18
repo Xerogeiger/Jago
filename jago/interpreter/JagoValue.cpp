@@ -1,5 +1,6 @@
 //
 // Created by creep on 1/13/2025.
+// Added assignment operator overloads for various types
 //
 
 #include "JagoValue.h"
@@ -41,7 +42,7 @@ namespace Jago {
         }
     }
 
-    int64_t JagoValue::asInt() const {
+    int64_t JagoValue::asLong() const {
         switch (type) {
             case FLOAT:
                 return static_cast<int64_t>(value.floatValue);
@@ -61,6 +62,53 @@ namespace Jago {
                 return 0;
         }
     }
+
+    int32_t JagoValue::asInt() const {
+        switch (type) {
+            case FLOAT:
+                return static_cast<int32_t>(value.floatValue);
+            case DOUBLE:
+                return static_cast<int32_t>(value.doubleValue);
+            case CHAR:
+                return value.charValue;
+            case SHORT:
+                return value.shortValue;
+            case BYTE:
+                return value.byteValue;
+            case LONG:
+                return static_cast<int32_t>(value.longValue);
+            case INT:
+                return value.intValue;
+            default:
+                return 0;
+        }
+    }
+
+    JagoValue JagoValue::castToType(const PrimitiveTypes type) const {
+        switch (type) {
+            case PrimitiveTypes::STRING:
+                return JagoValue{type, new std::string(*this->value.stringValue)};
+            case PrimitiveTypes::DOUBLE:
+                return JagoValue{type, this->value.doubleValue};
+            case PrimitiveTypes::INT:
+                return JagoValue{type, this->value.intValue};
+            case PrimitiveTypes::BOOLEAN:
+                return JagoValue{type, this->value.boolValue};
+            case PrimitiveTypes::CHAR:
+                return JagoValue{type, this->value.charValue};
+            case PrimitiveTypes::LONG:
+                return JagoValue{type, this->value.longValue};
+            case PrimitiveTypes::BYTE:
+                return JagoValue{type, this->value.byteValue};
+            case PrimitiveTypes::SHORT:
+                return JagoValue{type, this->value.shortValue};
+            case PrimitiveTypes::FLOAT:
+                return JagoValue{type, this->value.floatValue};
+            default:
+                throw std::runtime_error("Cannot cast to type " + std::to_string(type));
+        }
+    }
+
     bool JagoValue::operator==(const JagoValue &other) const {
         if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
             return false;
@@ -166,6 +214,44 @@ namespace Jago {
                 return this->value.pointerValue <= other.value.pointerValue;
             }
         }
+    }
+    JagoValue &JagoValue::operator=(const int value) {
+        this->type = PrimitiveTypes::INT;
+        this->value.intValue = value;
+        return *this;
+    }
+    JagoValue &JagoValue::operator=(const double value) {
+        this->type = PrimitiveTypes::DOUBLE;
+        this->value.doubleValue = value;
+        return *this;
+    }
+    JagoValue &JagoValue::operator=(const float value) {
+        this->type = PrimitiveTypes::FLOAT;
+        this->value.floatValue = value;
+        return *this;
+    }
+    JagoValue &JagoValue::operator=(const char value) {
+        this->type = PrimitiveTypes::CHAR;
+        this->value.charValue = value;
+        return *this;
+    }
+    JagoValue &JagoValue::operator=(const std::string &value) {
+        this->type = PrimitiveTypes::STRING;
+        if (!this->value.stringValue) {
+            this->value.stringValue = new std::string;
+        }
+        *this->value.stringValue = value;
+        return *this;
+    }
+    JagoValue &JagoValue::operator=(const bool value) {
+        this->type = PrimitiveTypes::BOOLEAN;
+        this->value.boolValue = value;
+        return *this;
+    }
+    JagoValue &JagoValue::operator=(const int64_t value) {
+        this->type = PrimitiveTypes::LONG;
+        this->value.longValue = value;
+        return *this;
     }
 
     std::ostream &operator<<(std::ostream &out, const JagoValue &value) {

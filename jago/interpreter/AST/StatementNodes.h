@@ -6,6 +6,7 @@
 #define STATEMENTNODES_H
 #include <memory>
 
+#include "../../PrimitiveTypes.h"
 #include "ASTNode.h"
 #include "ExpressionNodes.h"
 
@@ -33,9 +34,10 @@ namespace Jago {
     public:
         std::string variableName;
         std::unique_ptr<Expression> value;
+        Jago::PrimitiveTypes type;
 
-        explicit AssignmentStatement(std::string_view variableName, std::unique_ptr<Expression> value)
-            : Statement(), variableName(variableName), value(std::move(value)) {
+        explicit AssignmentStatement(std::string_view variableName, std::unique_ptr<Expression> value, Jago::PrimitiveTypes type)
+            : Statement(), variableName(variableName), value(std::move(value)), type(type) {
         }
 
         void accept(Visitor& visitor) override;

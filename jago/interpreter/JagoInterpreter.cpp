@@ -33,11 +33,36 @@ namespace Jago {
             return returnStatement;
         } else if (tokens[index].TokenType == Token::JagoTokenType::Keyword) {
             if (isPrimitiveType(tokens[index].TokenValue)) {
+                auto typeName = tokens[index].TokenValue;
+
+                Jago::PrimitiveTypes type;
+                if (typeName == "int") {
+                    type = Jago::PrimitiveTypes::INT;
+                } else if (typeName == "float") {
+                    type = Jago::PrimitiveTypes::FLOAT;
+                } else if (typeName == "bool") {
+                    type = Jago::PrimitiveTypes::BOOLEAN;
+                } else if (typeName == "string") {
+                    type = Jago::PrimitiveTypes::STRING;
+                } else if (typeName == "char") {
+                    type = Jago::PrimitiveTypes::CHAR;
+                } else if (typeName == "long") {
+                    type = Jago::PrimitiveTypes::LONG;
+                } else if (typeName == "double") {
+                    type = Jago::PrimitiveTypes::DOUBLE;
+                } else if (typeName == "byte") {
+                    type = Jago::PrimitiveTypes::BYTE;
+                } else if (typeName == "short") {
+                    type = Jago::PrimitiveTypes::SHORT;
+                } else {
+                    type = Jago::PrimitiveTypes::OBJECT;
+                }
+
                 index += 1;
                 auto variableName = tokens[index].TokenValue;
                 index += 2; // Skip the equals sign and move to the value
                 auto value = interpretExpression(tokens, index);
-                return std::make_unique<AssignmentStatement>(variableName, std::move(value));
+                return std::make_unique<AssignmentStatement>(variableName, std::move(value), type);
             }
         }
 
@@ -50,14 +75,14 @@ namespace Jago {
         std::stack<std::unique_ptr<Expression>> expressionStack; // Expressions
 
         // Define operator precedence
-        auto precedence = [](const std::string &op) -> int {
-            if (op == "+" || op == "-")
-                return 1; // Low precedence
-            if (op == "*" || op == "/")
-                return 2; // Medium precedence
-            if (op == "^")
-                return 3; // High precedence
-            return 0; // Unknown operator
+        auto precedence = [](const std::string &opStr) -> int {
+            for (const auto& op: Jago::DefaultJagoOperators) {
+                if (op.OperatorSymbol == opStr) {
+                    return op.Precedence;
+                }
+            }
+
+            return -1;
         };
 
         // While not at the end of the statement

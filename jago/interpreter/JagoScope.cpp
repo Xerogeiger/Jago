@@ -35,12 +35,15 @@ namespace Jago {
     }
 
     void JagoScope::dump(std::ostream &out) {
-        for (const auto& [name, value] : variables) {
+        for (const auto &[name, value]: variables) {
             out << "Variable: " << name << " = " << value << std::endl;
         }
 
-        for (const auto& [name, method] : functions) {
+        for (const auto &[name, method]: functions) {
             out << "Function: " << name << std::endl;
         }
+    }
+    bool JagoScope::hasVariable(const std::string &string) const {
+        return this->variables.contains(string);
     }
 } // Jago

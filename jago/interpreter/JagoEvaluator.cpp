@@ -53,30 +53,35 @@ namespace Jago {
             } else if (left == DOUBLE || right == DOUBLE) {
                 result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() + right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() + right.asInt());
+                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() + right.asLong());
             }
         } else if (op == "*") {
             if (left == DOUBLE || right == DOUBLE) {
                 result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() * right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() * right.asInt());
+                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() * right.asLong());
             }
         } else if (op == "-") {
             if (left == DOUBLE || right == DOUBLE) {
                 result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() - right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() - right.asInt());
+                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() - right.asLong());
             }
         } else if (op == "/") {
             if (left == DOUBLE || right == DOUBLE) {
                 result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() / right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() / right.asInt());
+                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() / right.asLong());
             }
         } else if (op == "=") {
-            this->scope->setVariable(leftVariableName, right);
+            if (scope->hasVariable(leftVariableName)) {
+                JagoValue currentValue = scope->getVariable(leftVariableName);
+                this->scope->setVariable(leftVariableName, right.castToType(currentValue.type));
+            } else {
+                throw std::runtime_error("Cannot assign to undeclared variable");
+            }
         } else if (op == "%") {
-            result = JagoValue(Jago::PrimitiveTypes::LONG, left.asInt() % right.asInt());
+            result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() % right.asLong());
         } else if (op == "==") {
             result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left == right);
         } else if (op == "!=") {
@@ -101,7 +106,21 @@ namespace Jago {
 
     void JagoEvaluator::visit(AssignmentStatement &assignmentStatement) {
         assignmentStatement.value->accept(*this);
-        scope->setVariable(assignmentStatement.variableName, result);
+
+        JagoValue variableValue;
+
+        switch (assignmentStatement.type) {
+            case PrimitiveTypes::INT:
+                variableValue = result.asInt();
+                break;
+            case PrimitiveTypes::DOUBLE:
+                variableValue = result.asDouble();
+                break;
+            case PrimitiveTypes::STRING:
+                variableValue = result.asString();
+        }
+
+        scope->setVariable(assignmentStatement.variableName, variableValue);
     }
 
     void JagoEvaluator::visit(Program &program) {

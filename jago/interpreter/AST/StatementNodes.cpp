@@ -21,7 +21,7 @@ namespace Jago {
     }
 
     void AssignmentStatement::prettyPrint(std::ostream &out, int indent) const {
-        out << std::string(indent, '\t') << "AssignmentStatement: " << variableName << std::endl;
+        out << std::string(indent, '\t') << "AssignmentStatement: " << type << " " << variableName << std::endl;
         value->prettyPrint(out, indent + 1);
     }
 }
