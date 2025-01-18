@@ -24,50 +24,38 @@ namespace Jago {
         }
 
         // Constructor for std::string*
-        JagoValue(const Jago::PrimitiveTypes type, std::string& value) : type(type) {
-            this->value = std::make_shared<std::string>(value);
+        explicit JagoValue(const std::string& value) : type(PrimitiveTypes::STRING), value(std::make_shared<std::string>(value)) {
         }
 
-        // Constructor for int32_t
-        JagoValue(const Jago::PrimitiveTypes type, const int32_t value) : type(type) {
-            this->value = value;
+        explicit JagoValue(const int32_t value): type(PrimitiveTypes::INT), value(value) {
         }
 
-        // Constructor for int64_t
-        JagoValue(const Jago::PrimitiveTypes type, const int64_t value) : type(type) {
-            this->value = value;
+        explicit JagoValue(const int64_t value): type(PrimitiveTypes::LONG), value(value) {
         }
 
-        // Constructor for int8_t
-        JagoValue(const Jago::PrimitiveTypes type, const int8_t value) : type(type) {
-            this->value = value;
+        explicit JagoValue(const int8_t value): type(PrimitiveTypes::BYTE), value(value) {
         }
 
-        // Constructor for int16_t
-        JagoValue(const Jago::PrimitiveTypes type, const int16_t value) : type(type) {
-            this->value = value;
+        explicit JagoValue(const int16_t value): type(PrimitiveTypes::SHORT), value(value) {
         }
 
-        // Constructor for float
-        JagoValue(const Jago::PrimitiveTypes type, const float value) : type(type) {
-            this->value = value;
+        explicit JagoValue(const float value): type(PrimitiveTypes::FLOAT), value(value) {
         }
 
-        // Constructor for double
-        JagoValue(const Jago::PrimitiveTypes type, const double value) : type(type) {
-            this->value = value;
+        explicit JagoValue(const double value): type(PrimitiveTypes::DOUBLE), value(value) {
         }
 
-        // Constructor for bool
-        JagoValue(const Jago::PrimitiveTypes type, const bool value) : type(type) {
-            this->value = value;
+        explicit JagoValue(const bool value): type(PrimitiveTypes::BOOLEAN), value(value) {
+        }
+
+        explicit JagoValue(const char value): type(PrimitiveTypes::CHAR), value(value) {
         }
 
         [[nodiscard]] std::string toString() const noexcept {
             if (std::holds_alternative<std::shared_ptr<std::string>>(value)) {
                 return *std::get<std::shared_ptr<std::string>>(value); // Dereference shared_ptr
             }
-            return std::get<std::string>(value); // Return direct string
+            return this->asString(); // Return direct string
         }
 
         [[nodiscard]] int32_t toInt() const noexcept {

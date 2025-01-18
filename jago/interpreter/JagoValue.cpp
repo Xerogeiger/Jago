@@ -7,8 +7,8 @@
 
 namespace Jago {
     std::string JagoValue::asString() const {
-        if (std::holds_alternative<std::string>(value)) {
-            return std::get<std::string>(value);
+        if (std::holds_alternative<std::shared_ptr<std::string>>(value)) {
+            return *std::get<std::shared_ptr<std::string>>(value);
         } else if (std::holds_alternative<double>(value)) {
             return std::to_string(std::get<double>(value));
         } else if (std::holds_alternative<int>(value)) {
@@ -18,7 +18,7 @@ namespace Jago {
         } else if (std::holds_alternative<char>(value)) {
             return std::string{std::get<char>(value)};
         } else {
-            return "null";
+            throw std::runtime_error("Cannot convert to string type to string " + std::to_string(type));
         }
     }
 
@@ -74,7 +74,7 @@ namespace Jago {
         } else if (std::holds_alternative<int8_t>(value)) {
             return static_cast<int32_t>(std::get<int8_t>(value));
         } else if (std::holds_alternative<int64_t>(value)) {
-            return std::get<int32_t>(value);
+            return static_cast<int32_t>(std::get<int64_t>(value));
         } else if (std::holds_alternative<int>(value)) {
             return static_cast<int32_t>(std::get<int>(value));
         } else {
@@ -85,23 +85,23 @@ namespace Jago {
     JagoValue JagoValue::castToType(const PrimitiveTypes type) const {
         switch (type) {
             case PrimitiveTypes::STRING:
-                return JagoValue{type, *std::get<std::shared_ptr<std::string>>(value)};
+                return JagoValue(this->asString());
             case PrimitiveTypes::DOUBLE:
-                return JagoValue{type, std::get<double>(value)};
+                return JagoValue(this->asDouble());
             case PrimitiveTypes::INT:
-                return JagoValue{type, std::get<int>(value)};
+                return JagoValue(this->asInt());
             case PrimitiveTypes::BOOLEAN:
-                return JagoValue{type, std::get<bool>(value)};
+                return JagoValue(std::get<bool>(value));
             case PrimitiveTypes::CHAR:
-                return JagoValue{type, std::get<char>(value)};
+                return JagoValue(std::get<char>(value));
             case PrimitiveTypes::LONG:
-                return JagoValue{type, std::get<int64_t>(value)};
+                return JagoValue(this->asLong());
             case PrimitiveTypes::BYTE:
-                return JagoValue{type, std::get<int8_t>(value)};
+                return JagoValue(std::get<int8_t>(value));
             case PrimitiveTypes::SHORT:
-                return JagoValue{type, std::get<int16_t>(value)};
+                return JagoValue(std::get<int16_t>(value));
             case PrimitiveTypes::FLOAT:
-                return JagoValue{type, std::get<float>(value)};
+                return JagoValue(std::get<float>(value));
             default:
                 throw std::runtime_error("Cannot cast to type " + std::to_string(type));
         }
@@ -142,7 +142,7 @@ namespace Jago {
         } else if (this->type != other.type) {
             return false;
         } else {
-            if (std::holds_alternative<std::string>(value)) {
+            if (std::holds_alternative<std::shared_ptr<std::string>>(value)) {
                 return this->toString() > other.toString();
             } else if (std::holds_alternative<double>(value)) {
                 return this->toDouble() > other.toDouble();
@@ -160,6 +160,8 @@ namespace Jago {
                 return this->toShort() > other.toShort();
             }
         }
+
+        return false;
     }
     bool JagoValue::operator<(const JagoValue &other) const {
         if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
@@ -167,7 +169,7 @@ namespace Jago {
         } else if (this->type != other.type) {
             return false;
         } else {
-            if (std::holds_alternative<std::string>(value)) {
+            if (std::holds_alternative<std::shared_ptr<std::string>>(value)) {
                 return this->toString() < other.toString();
             } else if (std::holds_alternative<double>(value)) {
                 return this->toDouble() < other.toDouble();
@@ -185,6 +187,8 @@ namespace Jago {
                 return this->toShort() < other.toShort();
             }
         }
+
+        return false;
     }
     bool JagoValue::operator>=(const JagoValue &other) const {
         if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {

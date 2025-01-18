@@ -14,7 +14,7 @@ namespace Jago {
         if (parentScope != nullptr)
             return parentScope->getVariable(name);
 
-        return JagoValue(PrimitiveTypes::VOID, static_cast<void*>(nullptr));
+        return {};
     }
 
     Jago::JagoMethod JagoScope::getFunction(const std::string_view name) {

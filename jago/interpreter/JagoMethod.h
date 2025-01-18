@@ -19,7 +19,7 @@ namespace Jago {
         JagoMethod() = default;
 
         JagoValue invoke() {
-            return JagoValue(PrimitiveTypes::VOID, static_cast<void*>(nullptr));
+            return {};
         }
     };
 }

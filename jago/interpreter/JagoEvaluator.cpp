@@ -19,15 +19,15 @@ namespace Jago {
         if (literal.value.starts_with('\"')) {
             auto value = std::string(literal.value.substr(1, literal.value.size() - 2));
 
-            result = JagoValue(Jago::PrimitiveTypes::STRING, value);
+            result = JagoValue(value);
         } else if (literal.value.starts_with('\'')) {
-            result = JagoValue(Jago::PrimitiveTypes::CHAR, static_cast<int8_t>(literal.value[1]));
+            result = JagoValue(static_cast<int8_t>(literal.value[1]));
         } else if (literal.value == "true" || literal.value == "false") {
-            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, literal.value == "true");
+            result = JagoValue(literal.value == "true");
         } else if (literal.value.contains('.')) {
-            result = JagoValue(Jago::PrimitiveTypes::DOUBLE, std::stod(std::string(literal.value)));
+            result = JagoValue(std::stod(std::string(literal.value)));
         } else {
-            result = JagoValue(Jago::PrimitiveTypes::INT, std::stoi(std::string(literal.value)));
+            result = JagoValue(std::stoi(std::string(literal.value)));
         }
     }
     void JagoEvaluator::visit(Variable &variable) {
@@ -49,29 +49,29 @@ namespace Jago {
             if (left == STRING || right == STRING) {
                 auto leftStr = left.asString();
                 auto rightStr = right.asString();
-                result = JagoValue(Jago::PrimitiveTypes::STRING, new std::string(leftStr + rightStr));
+                result = JagoValue(new std::string(leftStr + rightStr));
             } else if (left == DOUBLE || right == DOUBLE) {
-                result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() + right.asDouble());
+                result = JagoValue(left.asDouble() + right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() + right.asLong());
+                result = JagoValue(left.asLong() + right.asLong());
             }
         } else if (op == "*") {
             if (left == DOUBLE || right == DOUBLE) {
-                result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() * right.asDouble());
+                result = JagoValue(left.asDouble() * right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() * right.asLong());
+                result = JagoValue(left.asLong() * right.asLong());
             }
         } else if (op == "-") {
             if (left == DOUBLE || right == DOUBLE) {
-                result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() - right.asDouble());
+                result = JagoValue(left.asDouble() - right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() - right.asLong());
+                result = JagoValue(left.asLong() - right.asLong());
             }
         } else if (op == "/") {
             if (left == DOUBLE || right == DOUBLE) {
-                result = JagoValue(Jago::PrimitiveTypes::DOUBLE, left.asDouble() / right.asDouble());
+                result = JagoValue(left.asDouble() / right.asDouble());
             } else {
-                result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() / right.asLong());
+                result = JagoValue(left.asLong() / right.asLong());
             }
         } else if (op == "=") {
             if (scope->hasVariable(leftVariableName)) {
@@ -81,19 +81,19 @@ namespace Jago {
                 throw std::runtime_error("Cannot assign to undeclared variable");
             }
         } else if (op == "%") {
-            result = JagoValue(Jago::PrimitiveTypes::LONG, left.asLong() % right.asLong());
+            result = JagoValue(left.asLong() % right.asLong());
         } else if (op == "==") {
-            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left == right);
+            result = JagoValue(left == right);
         } else if (op == "!=") {
-            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left != right);
+            result = JagoValue(left != right);
         } else if (op == ">") {
-            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left > right);
+            result = JagoValue(left > right);
         } else if (op == "<") {
-            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left < right);
+            result = JagoValue(left < right);
         } else if (op == ">=") {
-            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left >= right);
+            result = JagoValue(left >= right);
         } else if (op == "<=") {
-            result = JagoValue(Jago::PrimitiveTypes::BOOLEAN, left <= right);
+            result = JagoValue(left <= right);
         }
     }
 
@@ -118,6 +118,7 @@ namespace Jago {
                 break;
             case PrimitiveTypes::STRING:
                 variableValue = result.asString();
+                break;
             default:;
         }
 
