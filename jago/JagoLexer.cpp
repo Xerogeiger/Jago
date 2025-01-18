@@ -45,11 +45,28 @@ namespace Jago {
         LexerSettings& lexerSettings = this->settings;
         LexerCommentSettings& commentSettings = lexerSettings.commentSettings;
 
+        bool inString = false;
         bool isNumber = true;
 
         for(uint32_t i = 0; i < value.length(); i++) {
             char c = value[i];
-            if((isNumber && c == '.') || Contains(lexerSettings.allowedWordCharacters, c)) {
+
+            if(c =='\"') {
+                if (wordStart != -1)
+                    AddWordToken(wordStart, i+1);
+
+                if (inString) {
+                    inString = false;
+                    isNumber = true;
+                    wordStart = -1;
+                } else {
+                    wordStart = i;
+                    inString = true;
+                    isNumber = false;
+                }
+            } else if (inString) {
+                continue;
+            } else if((isNumber && c == '.') || Contains(lexerSettings.allowedWordCharacters, c)) {
                 if(wordStart == -1)
                     wordStart = i;
 

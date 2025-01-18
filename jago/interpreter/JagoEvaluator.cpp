@@ -19,7 +19,7 @@ namespace Jago {
         if (literal.value.starts_with('\"')) {
             auto value = std::string(literal.value.substr(1, literal.value.size() - 2));
 
-            result = JagoValue(Jago::PrimitiveTypes::STRING, &value);
+            result = JagoValue(Jago::PrimitiveTypes::STRING, value);
         } else if (literal.value.starts_with('\'')) {
             result = JagoValue(Jago::PrimitiveTypes::CHAR, static_cast<int8_t>(literal.value[1]));
         } else if (literal.value == "true" || literal.value == "false") {
@@ -118,6 +118,7 @@ namespace Jago {
                 break;
             case PrimitiveTypes::STRING:
                 variableValue = result.asString();
+            default:;
         }
 
         scope->setVariable(assignmentStatement.variableName, variableValue);

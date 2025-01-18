@@ -7,103 +7,101 @@
 
 namespace Jago {
     std::string JagoValue::asString() const {
-        if (type == STRING) {
-            return *value.stringValue;
-        } else if (type == DOUBLE) {
-            return std::to_string(value.doubleValue);
-        } else if (type == INT) {
-            return std::to_string(value.intValue);
-        } else if (type == BOOLEAN) {
-            return value.boolValue ? "true" : "false";
-        } else if (type == CHAR) {
-            return std::string{static_cast<char>(value.charValue)};
+        if (std::holds_alternative<std::string>(value)) {
+            return std::get<std::string>(value);
+        } else if (std::holds_alternative<double>(value)) {
+            return std::to_string(std::get<double>(value));
+        } else if (std::holds_alternative<int>(value)) {
+            return std::to_string(std::get<int>(value));
+        } else if (std::holds_alternative<bool>(value)) {
+            return std::get<bool>(value) ? "true" : "false";
+        } else if (std::holds_alternative<char>(value)) {
+            return std::string{std::get<char>(value)};
         } else {
             return "null";
         }
     }
 
     double JagoValue::asDouble() const {
-        switch (type) {
-            case FLOAT:
-                return value.floatValue;
-            case DOUBLE:
-                return value.doubleValue;
-            case CHAR:
-                return value.charValue;
-            case SHORT:
-                return value.shortValue;
-            case BYTE:
-                return value.byteValue;
-            case LONG:
-                return static_cast<double>(value.longValue);
-            case INT:
-                return value.intValue;
-            default: return 0;
+        if (std::holds_alternative<float>(value)) {
+            return static_cast<double>(std::get<float>(value));
+        } else if (std::holds_alternative<double>(value)) {
+            return std::get<double>(value);
+        } else if (std::holds_alternative<char>(value)) {
+            return static_cast<double>(std::get<char>(value));
+        } else if (std::holds_alternative<int16_t>(value)) {
+            return static_cast<double>(std::get<int16_t>(value));
+        } else if (std::holds_alternative<int8_t>(value)) {
+            return static_cast<double>(std::get<int8_t>(value));
+        } else if (std::holds_alternative<int64_t>(value)) {
+            return static_cast<double>(std::get<int64_t>(value));
+        } else if (std::holds_alternative<int>(value)) {
+            return static_cast<double>(std::get<int>(value));
+        } else {
+            return 0;
         }
     }
 
     int64_t JagoValue::asLong() const {
-        switch (type) {
-            case FLOAT:
-                return static_cast<int64_t>(value.floatValue);
-            case DOUBLE:
-                return static_cast<int64_t>(value.doubleValue);
-            case CHAR:
-                return value.charValue;
-            case SHORT:
-                return value.shortValue;
-            case BYTE:
-                return value.byteValue;
-            case LONG:
-                return value.longValue;
-            case INT:
-                return value.intValue;
-            default:
-                return 0;
+        if (std::holds_alternative<float>(value)) {
+            return static_cast<int64_t>(std::get<float>(value));
+        } else if (std::holds_alternative<double>(value)) {
+            return static_cast<int64_t>(std::get<double>(value));
+        } else if (std::holds_alternative<char>(value)) {
+            return static_cast<int64_t>(std::get<char>(value));
+        } else if (std::holds_alternative<int16_t>(value)) {
+            return static_cast<int64_t>(std::get<int16_t>(value));
+        } else if (std::holds_alternative<int8_t>(value)) {
+            return static_cast<int64_t>(std::get<int8_t>(value));
+        } else if (std::holds_alternative<int64_t>(value)) {
+            return std::get<int64_t>(value);
+        } else if (std::holds_alternative<int>(value)) {
+            return static_cast<int64_t>(std::get<int>(value));
+        } else {
+            return 0;
         }
     }
 
     int32_t JagoValue::asInt() const {
-        switch (type) {
-            case FLOAT:
-                return static_cast<int32_t>(value.floatValue);
-            case DOUBLE:
-                return static_cast<int32_t>(value.doubleValue);
-            case CHAR:
-                return value.charValue;
-            case SHORT:
-                return value.shortValue;
-            case BYTE:
-                return value.byteValue;
-            case LONG:
-                return static_cast<int32_t>(value.longValue);
-            case INT:
-                return value.intValue;
-            default:
-                return 0;
+        if (std::holds_alternative<float>(value)) {
+            return static_cast<int32_t>(std::get<float>(value));
+        } else if (std::holds_alternative<double>(value)) {
+            return static_cast<int32_t>(std::get<double>(value));
+        } else if (std::holds_alternative<char>(value)) {
+            return static_cast<int32_t>(std::get<char>(value));
+        } else if (std::holds_alternative<int16_t>(value)) {
+            return static_cast<int32_t>(std::get<int16_t>(value));
+        } else if (std::holds_alternative<int8_t>(value)) {
+            return static_cast<int32_t>(std::get<int8_t>(value));
+        } else if (std::holds_alternative<int64_t>(value)) {
+            return std::get<int32_t>(value);
+        } else if (std::holds_alternative<int>(value)) {
+            return static_cast<int32_t>(std::get<int>(value));
+        } else {
+            return 0;
         }
     }
 
     JagoValue JagoValue::castToType(const PrimitiveTypes type) const {
         switch (type) {
             case PrimitiveTypes::STRING:
-                return JagoValue{type, new std::string(*this->value.stringValue)};
+                return JagoValue{type, *std::get<std::shared_ptr<std::string>>(value)};
             case PrimitiveTypes::DOUBLE:
-                return JagoValue{type, this->value.doubleValue};
+                return JagoValue{type, std::get<double>(value)};
             case PrimitiveTypes::INT:
-                return JagoValue{type, this->value.intValue};
+                return JagoValue{type, std::get<int>(value)};
             case PrimitiveTypes::BOOLEAN:
-                return JagoValue{type, this->value.boolValue};
+                return JagoValue{type, std::get<bool>(value)};
             case PrimitiveTypes::CHAR:
-                return JagoValue{type, this->value.charValue};
+                return JagoValue{type, std::get<char>(value)};
             case PrimitiveTypes::LONG:
-                return JagoValue{type, this->value.longValue};
+                return JagoValue{type, std::get<int64_t>(value)};
             case PrimitiveTypes::BYTE:
-                return JagoValue{type, this->value.byteValue};
+                return JagoValue{type, std::get<int8_t>(value)};
             case PrimitiveTypes::SHORT:
-                return JagoValue{type, this->value.shortValue};
+                return JagoValue{type, std::get<int16_t>(value)};
             case PrimitiveTypes::FLOAT:
-                return JagoValue{type, this->value.floatValue};
+                return JagoValue{type, std::get<float>(value)};
             default:
                 throw std::runtime_error("Cannot cast to type " + std::to_string(type));
         }
@@ -116,18 +114,26 @@ namespace Jago {
             return false;
         } else {
             if (this->type == PrimitiveTypes::STRING) {
-                return *this->value.stringValue == *other.value.stringValue;
+                return this->toString() == other.toString();
             } else if (this->type == PrimitiveTypes::DOUBLE) {
-                return this->value.doubleValue == other.value.doubleValue;
+                return this->toDouble() == other.toDouble();
+            } else if (this->type == PrimitiveTypes::FLOAT) {
+                return this->toFloat() == other.toFloat();
             } else if (this->type == PrimitiveTypes::INT) {
-                return this->value.intValue == other.value.intValue;
+                return this->toInt() == other.toInt();
             } else if (this->type == PrimitiveTypes::BOOLEAN) {
-                return this->value.boolValue == other.value.boolValue;
+                return this->toBool() == other.toBool();
             } else if (this->type == PrimitiveTypes::CHAR) {
-                return this->value.charValue == other.value.charValue;
-            } else {
-                return this->value.pointerValue == other.value.pointerValue;
+                return this->toChar() == other.toChar();
+            } else if (this->toByte() == other.toByte()) {
+                return this->toByte() == other.toByte();
+            } else if (this->toShort() == other.toShort()) {
+                return this->toShort() == other.toShort();
+            } else if (this->toLong() == other.toLong()) {
+                return this->toLong() == other.toLong();
             }
+
+            return false;
         }
     }
     bool JagoValue::operator>(const JagoValue &other) const {
@@ -136,18 +142,22 @@ namespace Jago {
         } else if (this->type != other.type) {
             return false;
         } else {
-            if (this->type == PrimitiveTypes::STRING) {
-                return *this->value.stringValue > *other.value.stringValue;
-            } else if (this->type == PrimitiveTypes::DOUBLE) {
-                return this->value.doubleValue > other.value.doubleValue;
-            } else if (this->type == PrimitiveTypes::INT) {
-                return this->value.intValue > other.value.intValue;
-            } else if (this->type == PrimitiveTypes::BOOLEAN) {
-                return this->value.boolValue > other.value.boolValue;
-            } else if (this->type == PrimitiveTypes::CHAR) {
-                return this->value.charValue > other.value.charValue;
-            } else {
-                return this->value.pointerValue > other.value.pointerValue;
+            if (std::holds_alternative<std::string>(value)) {
+                return this->toString() > other.toString();
+            } else if (std::holds_alternative<double>(value)) {
+                return this->toDouble() > other.toDouble();
+            } else if (std::holds_alternative<float>(value)) {
+                return this->toFloat() > other.toFloat();
+            } else if (std::holds_alternative<int>(value)) {
+                return this->toInt() > other.toInt();
+            } else if (std::holds_alternative<bool>(value)) {
+                return this->toBool() > other.toBool();
+            } else if (std::holds_alternative<char>(value)) {
+                return this->toChar() > other.toChar();
+            } else if (std::holds_alternative<int8_t>(value)) {
+                return this->toByte() > other.toByte();
+            } else if (std::holds_alternative<int16_t>(value)) {
+                return this->toShort() > other.toShort();
             }
         }
     }
@@ -157,18 +167,22 @@ namespace Jago {
         } else if (this->type != other.type) {
             return false;
         } else {
-            if (this->type == PrimitiveTypes::STRING) {
-                return *this->value.stringValue < *other.value.stringValue;
-            } else if (this->type == PrimitiveTypes::DOUBLE) {
-                return this->value.doubleValue < other.value.doubleValue;
-            } else if (this->type == PrimitiveTypes::INT) {
-                return this->value.intValue < other.value.intValue;
-            } else if (this->type == PrimitiveTypes::BOOLEAN) {
-                return this->value.boolValue < other.value.boolValue;
-            } else if (this->type == PrimitiveTypes::CHAR) {
-                return this->value.charValue < other.value.charValue;
-            } else {
-                return this->value.pointerValue < other.value.pointerValue;
+            if (std::holds_alternative<std::string>(value)) {
+                return this->toString() < other.toString();
+            } else if (std::holds_alternative<double>(value)) {
+                return this->toDouble() < other.toDouble();
+            } else if (std::holds_alternative<float>(value)) {
+                return this->toFloat() < other.toFloat();
+            } else if (std::holds_alternative<int>(value)) {
+                return this->toInt() < other.toInt();
+            } else if (std::holds_alternative<bool>(value)) {
+                return this->toBool() < other.toBool();
+            } else if (std::holds_alternative<char>(value)) {
+                return this->toChar() < other.toChar();
+            } else if (std::holds_alternative<int8_t>(value)) {
+                return this->toByte() < other.toByte();
+            } else if (std::holds_alternative<int16_t>(value)) {
+                return this->toShort() < other.toShort();
             }
         }
     }
@@ -178,110 +192,77 @@ namespace Jago {
         } else if (this->type != other.type) {
             return false;
         } else {
-            if (this->type == PrimitiveTypes::STRING) {
-                return *this->value.stringValue >= *other.value.stringValue;
-            } else if (this->type == PrimitiveTypes::DOUBLE) {
-                return this->value.doubleValue >= other.value.doubleValue;
-            } else if (this->type == PrimitiveTypes::INT) {
-                return this->value.intValue >= other.value.intValue;
-            } else if (this->type == PrimitiveTypes::BOOLEAN) {
-                return this->value.boolValue >= other.value.boolValue;
-            } else if (this->type == PrimitiveTypes::CHAR) {
-                return this->value.charValue >= other.value.charValue;
-            } else {
-                return this->value.pointerValue >= other.value.pointerValue;
-            }
+            return this->operator>(other) || this->operator==(other);
         }
     }
 
     bool JagoValue::operator<=(const JagoValue &other) const {
-        if (this->type == PrimitiveTypes::VOID || other.type == PrimitiveTypes::VOID) {
-            return false;
-        } else if (this->type != other.type) {
-            return false;
-        } else {
-            if (this->type == PrimitiveTypes::STRING) {
-                return *this->value.stringValue <= *other.value.stringValue;
-            } else if (this->type == PrimitiveTypes::DOUBLE) {
-                return this->value.doubleValue <= other.value.doubleValue;
-            } else if (this->type == PrimitiveTypes::INT) {
-                return this->value.intValue <= other.value.intValue;
-            } else if (this->type == PrimitiveTypes::BOOLEAN) {
-                return this->value.boolValue <= other.value.boolValue;
-            } else if (this->type == PrimitiveTypes::CHAR) {
-                return this->value.charValue <= other.value.charValue;
-            } else {
-                return this->value.pointerValue <= other.value.pointerValue;
-            }
-        }
+        return this->operator<(other) || this->operator==(other);
     }
     JagoValue &JagoValue::operator=(const int value) {
         this->type = PrimitiveTypes::INT;
-        this->value.intValue = value;
+        this->value = value;
         return *this;
     }
     JagoValue &JagoValue::operator=(const double value) {
         this->type = PrimitiveTypes::DOUBLE;
-        this->value.doubleValue = value;
+        this->value = value;
         return *this;
     }
     JagoValue &JagoValue::operator=(const float value) {
         this->type = PrimitiveTypes::FLOAT;
-        this->value.floatValue = value;
+        this->value = value;
         return *this;
     }
     JagoValue &JagoValue::operator=(const char value) {
         this->type = PrimitiveTypes::CHAR;
-        this->value.charValue = value;
+        this->value = value;
         return *this;
     }
     JagoValue &JagoValue::operator=(const std::string &value) {
         this->type = PrimitiveTypes::STRING;
-        if (!this->value.stringValue) {
-            this->value.stringValue = new std::string;
-        }
-        *this->value.stringValue = value;
+        this->value = std::make_shared<std::string>(value);
         return *this;
     }
     JagoValue &JagoValue::operator=(const bool value) {
         this->type = PrimitiveTypes::BOOLEAN;
-        this->value.boolValue = value;
+        this->value = value;
         return *this;
     }
     JagoValue &JagoValue::operator=(const int64_t value) {
         this->type = PrimitiveTypes::LONG;
-        this->value.longValue = value;
+        this->value = value;
         return *this;
     }
 
     std::ostream &operator<<(std::ostream &out, const JagoValue &value) {
         switch (value.type) {
             case PrimitiveTypes::STRING:
-                out << std::string("String Value: ") << *value.value.stringValue;
+                out << std::string("String Value: ") << *std::get<std::shared_ptr<std::string>>(value.value);
                 break;
             case PrimitiveTypes::DOUBLE:
-                out << std::string("Double Value: ") << std::to_string(value.value.doubleValue);
+                out << std::string("Double Value: ") << std::to_string(std::get<double>(value.value));
                 break;
             case PrimitiveTypes::FLOAT:
-                out << std::string("Float Value: ") << std::to_string(value.value.floatValue);
+                out << std::string("Float Value: ") << std::to_string(std::get<float>(value.value));
                 break;
             case PrimitiveTypes::INT:
-                out << std::string("Int Value: ") << std::to_string(value.value.intValue);
+                out << std::string("Int Value: ") << std::to_string(std::get<int>(value.value));
                 break;
             case PrimitiveTypes::LONG:
-                out << std::string("Long Value: ") << std::to_string(value.value.longValue);
+                out << std::string("Long Value: ") << std::to_string(std::get<int64_t>(value.value));
                 break;
             case PrimitiveTypes::SHORT:
-                out << std::string("Short Value: ") << std::to_string(value.value.shortValue);
+                out << std::string("Short Value: ") << std::to_string(std::get<int16_t>(value.value));
                 break;
             case PrimitiveTypes::BYTE:
-                out << std::string("Byte Value: ") << std::to_string(value.value.byteValue);
+                out << std::string("Byte Value: ") << std::to_string(std::get<int8_t>(value.value));
                 break;
             case PrimitiveTypes::CHAR:
-                out << std::string("Char Value: ") << std::to_string(value.value.charValue);
+                out << std::string("Char Value: ") << std::to_string(std::get<char>(value.value));
                 break;
             case PrimitiveTypes::BOOLEAN:
-                out << std::string("Bool Value: ") << std::string(value.value.boolValue ? "true" : "false");
+                out << std::string("Bool Value: ") << std::string(std::get<bool>(value.value) ? "true" : "false");
                 break;
             case PrimitiveTypes::VOID:
                 out << std::string("Void Value: ") << std::string("void");

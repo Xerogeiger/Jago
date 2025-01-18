@@ -135,13 +135,15 @@ namespace Jago {
             new JagoKeyword("float", KeywordType::PrimitiveType);
     [[maybe_unused]] const JagoKeyword *const PrimitiveDouble =
             new JagoKeyword("double", KeywordType::PrimitiveType);
+    [[maybe_unused]] const JagoKeyword *const PrimitiveString =
+            new JagoKeyword("string", KeywordType::PrimitiveType);
     [[maybe_unused]] const JagoKeyword *const PrimitiveVoid =
             new JagoKeyword("void", KeywordType::PrimitiveType);
 
 
     inline bool isPrimitiveType(std::string_view type) {
         return type == "int" || type == "long" || type == "short" || type == "byte" || type == "char" ||
-               type == "boolean" || type == "float" || type == "double" || type == "void";
+               type == "boolean" || type == "float" || type == "double" || type == "void" || type == "string";
     }
 
     [[maybe_unused]] const std::vector<const JagoKeyword *> DefaultJagoKeywords{
@@ -179,6 +181,7 @@ namespace Jago {
         PrimitiveBoolean,
         PrimitiveFloat,
         PrimitiveDouble,
+        PrimitiveString,
         PrimitiveVoid
     };
 }

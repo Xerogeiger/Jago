@@ -76,13 +76,13 @@ namespace Jago {
                             throw std::invalid_argument("Expected a string literal to both start and end with double quotes, error on line " + std::to_string(lineNumber));
                         }
 
-                        tokens.push_back(JagoToken{Token::JagoTokenType::StringLiteral, std::string(token.substr(1, token.length() - 2)), lineNumber});
+                        tokens.push_back(JagoToken{Token::JagoTokenType::StringLiteral, std::string(token), lineNumber});
                     } else if(firstCharacter == '\'') {
                         if(token[token.length()-1] != '\'') {
                             throw std::invalid_argument("Expected a character literal to both start and end with single quotes, error on line " + std::to_string(lineNumber));
                         }
 
-                        tokens.push_back(JagoToken{Token::JagoTokenType::CharacterLiteral, std::string(token.substr(1, token.length() - 2)), lineNumber});
+                        tokens.push_back(JagoToken{Token::JagoTokenType::CharacterLiteral, std::string(token), lineNumber});
                     } else if(IsNumber(firstCharacter)) {
                         tokens.push_back(JagoToken{Token::JagoTokenType::NumberLiteral, std::string(token), lineNumber});
                     } else {
