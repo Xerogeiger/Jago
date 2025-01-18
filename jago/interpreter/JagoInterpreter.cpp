@@ -44,16 +44,20 @@ namespace Jago {
         return nullptr;
     }
 
-    std::unique_ptr<Expression> JagoInterpreter::interpretExpression(std::vector<Jago::JagoToken> tokens, int &index) const {
+    std::unique_ptr<Expression>
+    JagoInterpreter::interpretExpression(std::vector<Jago::JagoToken> tokens, int &index) const {
         std::stack<JagoToken> operatorStack; // Operators
         std::stack<std::unique_ptr<Expression>> expressionStack; // Expressions
 
         // Define operator precedence
         auto precedence = [](const std::string &op) -> int {
-            if (op == "+" || op == "-") return 1;  // Low precedence
-            if (op == "*" || op == "/") return 2;  // Medium precedence
-            if (op == "^") return 3;              // High precedence
-            return 0;                             // Unknown operator
+            if (op == "+" || op == "-")
+                return 1; // Low precedence
+            if (op == "*" || op == "/")
+                return 2; // Medium precedence
+            if (op == "^")
+                return 3; // High precedence
+            return 0; // Unknown operator
         };
 
         // While not at the end of the statement
@@ -67,10 +71,11 @@ namespace Jago {
                 expressionStack.push(std::make_unique<Variable>(tokens[index].TokenValue));
             } else if (tokens[index].TokenType == Token::JagoTokenType::Operator) {
                 // While there is an operator on the stack with higher or equal precedence
-                while (!operatorStack.empty() &&
-                       precedence(operatorStack.top().TokenValue) >= precedence(tokens[index].TokenValue)) {
+                while (!operatorStack.empty() && precedence(operatorStack.top().TokenValue) >=
+                                                         precedence(tokens[index].TokenValue)) {
                     if (operatorStack.empty() || expressionStack.size() < 2) {
-                        throw std::runtime_error("Invalid state: operator or expression stack is empty");
+                        throw std::runtime_error(
+                                "Invalid state: operator or expression stack is empty");
                     }
 
                     auto op = operatorStack.top();
@@ -83,7 +88,8 @@ namespace Jago {
                     auto left = std::move(expressionStack.top());
                     expressionStack.pop();
 
-                    expressionStack.push(std::make_unique<BinaryExpression>(std::move(left), std::move(right), op.TokenValue));
+                    expressionStack.push(std::make_unique<BinaryExpression>(
+                            std::move(left), std::move(right), op.TokenValue));
                 }
 
                 // Push the current operator to the stack
@@ -109,14 +115,15 @@ namespace Jago {
             auto left = std::move(expressionStack.top());
             expressionStack.pop();
 
-            expressionStack.push(std::make_unique<BinaryExpression>(std::move(left), std::move(right), op.TokenValue));
+            expressionStack.push(std::make_unique<BinaryExpression>(
+                    std::move(left), std::move(right), op.TokenValue));
         }
 
         // The final expression on the stack is the result
         if (expressionStack.size() == 1) {
             return std::move(expressionStack.top());
         } else {
-            return nullptr;  // Error case
+            return nullptr; // Error case
         }
     }
 
