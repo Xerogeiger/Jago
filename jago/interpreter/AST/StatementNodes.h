@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "../../PrimitiveTypes.h"
+#include "../JagoMethod.h"
 #include "ASTNode.h"
 #include "ExpressionNodes.h"
 
@@ -42,6 +43,34 @@ namespace Jago {
 
         void accept(Visitor& visitor) override;
 
+        void prettyPrint(std::ostream &out, int indent) const override;
+    };
+
+    class MethodDeclarationStatement final : public Statement {
+    public:
+        std::string name;
+        JagoType returnType;
+        std::vector<JagoParameter> parameters;
+        std::unique_ptr<ASTNode> body;
+
+        explicit MethodDeclarationStatement(std::string_view name, JagoType returnType, std::vector<JagoParameter> parameters, std::unique_ptr<ASTNode> body)
+            : Statement(), name(name), returnType(returnType), parameters(std::move(parameters)), body(std::move(body)) {
+        }
+
+        void accept(Visitor& visitor) override;
+        void prettyPrint(std::ostream &out, int indent) const override;
+    };
+
+    class ScopeBody final : public Statement {
+    private:
+        std::vector<std::unique_ptr<ASTNode>> statements;
+
+    public:
+        explicit ScopeBody(std::vector<std::unique_ptr<ASTNode>> statements)
+            : Statement(), statements(std::move(statements)) {
+        }
+
+        void accept(Visitor& visitor) override;
         void prettyPrint(std::ostream &out, int indent) const override;
     };
 }

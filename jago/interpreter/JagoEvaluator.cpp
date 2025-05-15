@@ -46,29 +46,29 @@ namespace Jago {
         auto op = binaryExpression.op;
 
         if (op == "+") {
-            if (left == STRING || right == STRING) {
+            if (left == Type::STRING || right == Type::STRING) {
                 auto leftStr = left.asString();
                 auto rightStr = right.asString();
                 result = JagoValue(new std::string(leftStr + rightStr));
-            } else if (left == DOUBLE || right == DOUBLE) {
+            } else if (left == Type::DOUBLE || right == Type::DOUBLE) {
                 result = JagoValue(left.asDouble() + right.asDouble());
             } else {
                 result = JagoValue(left.asLong() + right.asLong());
             }
         } else if (op == "*") {
-            if (left == DOUBLE || right == DOUBLE) {
+            if (left == Type::DOUBLE || right == Type::DOUBLE) {
                 result = JagoValue(left.asDouble() * right.asDouble());
             } else {
                 result = JagoValue(left.asLong() * right.asLong());
             }
         } else if (op == "-") {
-            if (left == DOUBLE || right == DOUBLE) {
+            if (left == Type::DOUBLE || right == Type::DOUBLE) {
                 result = JagoValue(left.asDouble() - right.asDouble());
             } else {
                 result = JagoValue(left.asLong() - right.asLong());
             }
         } else if (op == "/") {
-            if (left == DOUBLE || right == DOUBLE) {
+            if (left == Type::DOUBLE || right == Type::DOUBLE) {
                 result = JagoValue(left.asDouble() / right.asDouble());
             } else {
                 result = JagoValue(left.asLong() / right.asLong());
@@ -130,6 +130,21 @@ namespace Jago {
             statement->accept(*this);
         }
     }
+    void JagoEvaluator::visit(MethodDeclarationStatement methodStatement) {
+        scope->setFunction(methodStatement.name,
+                           JagoMethod(std::move(methodStatement.body), methodStatement.parameters));
+    }
+    void JagoEvaluator::visit(const MethodCallExpression &methodCallExpression) {
+        auto newScope = JagoScope(scope);
+
+        for (const auto &param: methodCallExpression.arguments) {
+            param->accept(*this);
+            newScope.setVariable(resultVariableName, result);
+        }
+
+        scope->getFunction(methodCallExpression.name).invoke(newScope);
+    }
+
     void JagoEvaluator::dump(std::ostream &out) const {
         out << "Last Result: " << result << std::endl;
 

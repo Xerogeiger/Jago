@@ -68,6 +68,18 @@ namespace Jago {
         std::unique_ptr<Expression> expression;
         std::string op;
     };
+
+    class MethodCallExpression : public Expression {
+    public:
+        MethodCallExpression(std::string name, std::vector<std::unique_ptr<Expression>> arguments)
+            : name(name), arguments(std::move(arguments)) {}
+
+        void accept(Visitor& visitor) override;
+        void prettyPrint(std::ostream &out, int indent) const override;
+
+        std::string name;
+        std::vector<std::unique_ptr<Expression>> arguments;
+    };
 } // namespace Jago
 
 #endif //EXPRESSIONNODES_H

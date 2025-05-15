@@ -140,6 +140,9 @@ namespace Jago {
     [[maybe_unused]] const JagoKeyword *const PrimitiveVoid =
             new JagoKeyword("void", KeywordType::PrimitiveType);
 
+    [[maybe_unused]] const JagoKeyword *const DefineFunctionKeyword =
+            new JagoKeyword("define", KeywordType::CreationDeclaration);
+
 
     inline bool isPrimitiveType(std::string_view type) {
         return type == "int" || type == "long" || type == "short" || type == "byte" || type == "char" ||
@@ -182,7 +185,9 @@ namespace Jago {
         PrimitiveFloat,
         PrimitiveDouble,
         PrimitiveString,
-        PrimitiveVoid
+        PrimitiveVoid,
+
+        DefineFunctionKeyword
     };
 }
 

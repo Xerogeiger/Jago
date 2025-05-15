@@ -36,4 +36,11 @@ namespace Jago {
         out << std::string(indent, '\t') << "UnaryExpression: " << op << std::endl;
         expression->prettyPrint(out, indent + 1);
     }
-}
+    void MethodCallExpression::accept(Visitor &visitor) {
+        visitor.visit(*this);
+    }
+
+    void MethodCallExpression::prettyPrint(std::ostream &out, int indent) const {
+        out << std::string(indent, '\t') << "MethodCallExpression: " << name << std::endl;
+    }
+} // namespace Jago

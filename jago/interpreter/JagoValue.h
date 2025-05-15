@@ -11,44 +11,45 @@
 #include <variant>
 
 #include "../PrimitiveTypes.h"
+#include "JagoType.h"
 
 namespace Jago {
 
     class JagoValue {
     public:
-        Jago::PrimitiveTypes type;
+        JagoType type;
 
-        std::variant<int32_t, int64_t, int8_t, int16_t, char, float, double, bool, std::string, std::shared_ptr<std::string>> value;
+        std::variant<int32_t, int64_t, int8_t, int16_t, char, float, double, bool, std::shared_ptr<std::string>, void*> value;
 
-        JagoValue() : type(Jago::PrimitiveTypes::VOID), value(nullptr) {
+        JagoValue() : type(Jago::Type::VOID), value(nullptr) {
         }
 
         // Constructor for std::string*
-        explicit JagoValue(const std::string& value) : type(PrimitiveTypes::STRING), value(std::make_shared<std::string>(value)) {
+        explicit JagoValue(const std::string& value) : type(Jago::Type::STRING), value(std::make_shared<std::string>(value)) {
         }
 
-        explicit JagoValue(const int32_t value): type(PrimitiveTypes::INT), value(value) {
+        explicit JagoValue(const int32_t value) : type(Jago::Type::INT), value(value) {
         }
 
-        explicit JagoValue(const int64_t value): type(PrimitiveTypes::LONG), value(value) {
+        explicit JagoValue(const int64_t value) : type(Jago::Type::LONG), value(value) {
         }
 
-        explicit JagoValue(const int8_t value): type(PrimitiveTypes::BYTE), value(value) {
+        explicit JagoValue(const int8_t value) : type(Jago::Type::BYTE), value(value) {
         }
 
-        explicit JagoValue(const int16_t value): type(PrimitiveTypes::SHORT), value(value) {
+        explicit JagoValue(const int16_t value) : type(Jago::Type::SHORT), value(value) {
         }
 
-        explicit JagoValue(const float value): type(PrimitiveTypes::FLOAT), value(value) {
+        explicit JagoValue(const float value) : type(Jago::Type::FLOAT), value(value) {
         }
 
-        explicit JagoValue(const double value): type(PrimitiveTypes::DOUBLE), value(value) {
+        explicit JagoValue(const double value) : type(Jago::Type::DOUBLE), value(value) {
         }
 
-        explicit JagoValue(const bool value): type(PrimitiveTypes::BOOLEAN), value(value) {
+        explicit JagoValue(const bool value) : type(Jago::Type::BOOLEAN), value(value) {
         }
 
-        explicit JagoValue(const char value): type(PrimitiveTypes::CHAR), value(value) {
+        explicit JagoValue(const char value) : type(Jago::Type::CHAR), value(value) {
         }
 
         [[nodiscard]] std::string toString() const noexcept {
@@ -94,9 +95,9 @@ namespace Jago {
         [[nodiscard]] double asDouble() const;
         [[nodiscard]] int64_t asLong() const;
         [[nodiscard]] int32_t asInt() const;
-        [[nodiscard]] JagoValue castToType(PrimitiveTypes type) const;
+        [[nodiscard]] JagoValue castToType(const JagoType& type) const;
 
-        bool operator==(const PrimitiveTypes type) const {
+        bool operator==(const JagoType& type) const {
             return this->type == type;
         }
 

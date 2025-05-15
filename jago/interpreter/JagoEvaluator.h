@@ -26,6 +26,16 @@ namespace Jago {
         void visit(ReturnStatement& returnStatement) override;
         void visit(AssignmentStatement &assignmentStatement) override;
         void visit(Program &program) override;
+        void visit(MethodDeclarationStatement methodStatement) override;
+        void visit(const MethodCallExpression &methodCallExpression) override;
+
+        [[nodiscard]] JagoValue getResult() const {
+            return result;
+        }
+
+        [[nodiscard]] std::string getResultVariableName() const {
+            return resultVariableName;
+        }
 
         void dump(std::ostream &out) const;
     };

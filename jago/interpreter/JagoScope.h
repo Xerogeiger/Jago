@@ -7,19 +7,22 @@
 #include <map>
 #include <string>
 
-#include "JagoMethod.h"
-
 namespace Jago {
+    class JagoMethod;
+    class JagoValue;
+
     class JagoScope {
     protected:
         JagoScope* parentScope = nullptr;
 
-        std::map<std::string_view, Jago::JagoMethod> functions;
-        std::map<std::string_view, Jago::JagoValue> variables;
+        std::map<std::string_view, JagoMethod> functions;
+        std::map<std::string_view, JagoValue> variables;
 
     public:
-        [[nodiscard]] Jago::JagoValue getVariable(std::string_view name);
-        [[nodiscard]] Jago::JagoMethod getFunction(std::string_view name);
+        explicit JagoScope(JagoScope* parentScope = nullptr) : parentScope(parentScope) {}
+
+        [[nodiscard]] JagoValue getVariable(std::string_view name);
+        [[nodiscard]] JagoMethod getFunction(std::string_view name);
 
         void setVariable(std::string_view name, Jago::JagoValue value);
 

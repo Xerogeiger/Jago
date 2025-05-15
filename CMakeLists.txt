@@ -30,4 +30,7 @@ add_executable(Jago main.cpp jago/JagoLexer.cpp jago/JagoLexer.h jago/JagoToken.
         jago/interpreter/JagoEvaluator.cpp
         jago/interpreter/JagoEvaluator.h
         jago/interpreter/JagoValue.cpp
-        jago/interpreter/JagoValue.h)
+        jago/interpreter/JagoValue.h
+        jago/interpreter/JagoType.cpp
+        jago/interpreter/JagoType.h
+)

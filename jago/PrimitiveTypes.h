@@ -8,7 +8,7 @@
 #include <ostream>
 
 namespace Jago {
-    enum PrimitiveTypes {
+    enum class PrimitiveTypes {
         VOID = 0x00,
 
         BYTE = 0x01,
@@ -30,37 +30,37 @@ namespace Jago {
 
     inline std::ostream& operator<<(std::ostream& os, PrimitiveTypes type) {
         switch (type) {
-            case VOID:
+            case PrimitiveTypes::VOID:
                 os << "void";
                 break;
-            case BYTE:
+            case PrimitiveTypes::BYTE:
                 os << "byte";
                 break;
-            case SHORT:
+            case PrimitiveTypes::SHORT:
                 os << "short";
                 break;
-            case INT:
+            case PrimitiveTypes::INT:
                 os << "int";
                 break;
-            case LONG:
+            case PrimitiveTypes::LONG:
                 os << "long";
                 break;
-            case FLOAT:
+            case PrimitiveTypes::FLOAT:
                 os << "float";
                 break;
-            case DOUBLE:
+            case PrimitiveTypes::DOUBLE:
                 os << "double";
                 break;
-            case CHAR:
+            case PrimitiveTypes::CHAR:
                 os << "char";
                 break;
-            case BOOLEAN:
+            case PrimitiveTypes::BOOLEAN:
                 os << "boolean";
                 break;
-            case STRING:
+            case PrimitiveTypes::STRING:
                 os << "string";
                 break;
-            case OBJECT:
+            case PrimitiveTypes::OBJECT:
                 os << "object";
                 break;
         }

@@ -7,6 +7,8 @@
 #include <utility>
 #include <iostream>
 
+#include "JagoMethod.h"
+
 namespace Jago {
     Jago::JagoValue JagoScope::getVariable(const std::string_view name) {
         if (variables.contains(name))
@@ -19,7 +21,7 @@ namespace Jago {
 
     Jago::JagoMethod JagoScope::getFunction(const std::string_view name) {
         if (functions.contains(name))
-            return functions[name];
+            return std::move(functions[name]);
         if (parentScope != nullptr)
             return parentScope->getFunction(name);
 

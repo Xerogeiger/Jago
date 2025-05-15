@@ -4,6 +4,7 @@
 
 #ifndef VISITOR_H
 #define VISITOR_H
+#include "StatementNodes.h"
 
 namespace Jago {
 
@@ -25,7 +26,9 @@ namespace Jago {
         virtual void visit(UnaryExpression& unaryExpression) = 0;
         virtual void visit(ReturnStatement& returnStatement) = 0;
         virtual void visit(AssignmentStatement& assignmentStatement) = 0;
-        virtual void visit(Program& program) = 0;
+        virtual void visit(Program &program) = 0;
+        virtual void visit(MethodDeclarationStatement literal) = 0;
+        virtual void visit(const MethodCallExpression & literal) = 0;
     };
 
 }

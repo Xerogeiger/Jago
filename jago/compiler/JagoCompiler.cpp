@@ -69,21 +69,21 @@ void ExpectNextToken(std::vector<Jago::JagoToken>::iterator cur, std::vector<Jag
 
 Jago::PrimitiveTypes GetTypeByName(std::string& typeName) {
     if(Jago::StringEquals(typeName, "int")) {
-        return Jago::INT;
+        return Jago::PrimitiveTypes::INT;
     } else if(Jago::StringEquals(typeName, "long")) {
-        return Jago::LONG;
+        return Jago::PrimitiveTypes::LONG;
     } else if(Jago::StringEquals(typeName, "byte")) {
-        return Jago::BYTE;
+        return Jago::PrimitiveTypes::BYTE;
     } else if(Jago::StringEquals(typeName, "short")) {
-        return Jago::SHORT;
+        return Jago::PrimitiveTypes::SHORT;
     } else if(Jago::StringEquals(typeName, "float")) {
-        return Jago::FLOAT;
+        return Jago::PrimitiveTypes::FLOAT;
     } else if(Jago::StringEquals(typeName, "double")) {
-        return Jago::DOUBLE;
+        return Jago::PrimitiveTypes::DOUBLE;
     } else if(Jago::StringEquals(typeName, "char")) {
-        return Jago::CHAR;
+        return Jago::PrimitiveTypes::CHAR;
     } else {
-        return Jago::OBJECT;
+        return Jago::PrimitiveTypes::OBJECT;
     }
 }
 
