@@ -11,32 +11,32 @@
 
 namespace Jago {
     Jago::JagoValue JagoScope::getVariable(const std::string_view name) {
-        if (variables.contains(name))
-            return variables[name];
+        if (variables.contains(name.data()))
+            return variables[name.data()];
         if (parentScope != nullptr)
             return parentScope->getVariable(name);
 
-        return {};
+        throw std::runtime_error("Variable not found: " + std::string(name));
     }
 
-    Jago::JagoMethod JagoScope::getFunction(const std::string_view name) {
-        if (functions.contains(name))
-            return std::move(functions[name]);
+    std::shared_ptr<Jago::JagoMethod> JagoScope::getFunction(const std::string_view name) {
+        if (functions.contains(name.data()))
+            return functions[name.data()];
         if (parentScope != nullptr)
             return parentScope->getFunction(name);
 
-        return {};
+        throw std::runtime_error("Function not found: " + std::string(name));
     }
 
     void JagoScope::setVariable(std::string_view name, Jago::JagoValue value) {
-        variables.insert_or_assign(name, std::move(value));
+        variables.insert_or_assign(name.data(), std::move(value));
     }
 
-    void JagoScope::setFunction(std::string_view name, Jago::JagoMethod method) {
-        functions.insert_or_assign(name, std::move(method));
+    void JagoScope::setFunction(std::string_view name, std::shared_ptr<Jago::JagoMethod> method) {
+        functions.insert_or_assign(name.data(), method);
     }
 
-    void JagoScope::dump(std::ostream &out) {
+    void JagoScope::dump(std::ostream &out) const {
         for (const auto &[name, value]: variables) {
             out << "Variable: " << name << " = " << value << std::endl;
         }

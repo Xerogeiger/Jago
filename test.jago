@@ -1,11 +1,5 @@
-int var = 3.3 + 4 * 5 + 3;
-var = var + 3;
-double x = 3.3;
-x = x + 3;
-string test = "test";
-
-define int test () {
-    return 3;
+if(true) {
+    print("Hello, World!");
+} else {
+    print("Goodbye, World!");
 }
-
-test();

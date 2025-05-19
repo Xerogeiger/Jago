@@ -14,28 +14,29 @@ namespace Jago {
     protected:
         std::string resultVariableName;
         JagoValue result = JagoValue();
-        JagoScope* scope = nullptr;
+        JagoScope currentScope;
+        JagoScope *globalScope = nullptr;
 
     public:
+        void defineGlobalFunctions();
         explicit JagoEvaluator();
 
-        void visit(Literal& literal) override;
+        void visit(Literal &literal) override;
         void visit(Variable &variable) override;
-        void visit(BinaryExpression& binaryExpression) override;
-        void visit(UnaryExpression& unaryExpression) override;
-        void visit(ReturnStatement& returnStatement) override;
+        void visit(BinaryExpression &binaryExpression) override;
+        void visit(UnaryExpression &unaryExpression) override;
+        void visit(ReturnStatement &returnStatement) override;
         void visit(AssignmentStatement &assignmentStatement) override;
         void visit(Program &program) override;
         void visit(MethodDeclarationStatement methodStatement) override;
         void visit(const MethodCallExpression &methodCallExpression) override;
+        void visit(const IfStatement &statement) override;
 
-        [[nodiscard]] JagoValue getResult() const {
-            return result;
-        }
+        [[nodiscard]] JagoScope &getCurrentScope() { return currentScope; }
 
-        [[nodiscard]] std::string getResultVariableName() const {
-            return resultVariableName;
-        }
+        [[nodiscard]] JagoValue getResult() override { return result; }
+
+        [[nodiscard]] std::string getResultVariableName() const { return resultVariableName; }
 
         void dump(std::ostream &out) const;
     };

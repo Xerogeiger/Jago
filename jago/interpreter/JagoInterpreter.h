@@ -19,7 +19,7 @@ namespace Jago {
 
         [[nodiscard]] ASTNode* interpret(std::vector<Jago::JagoToken> tokens) const;
         [[nodiscard]] std::unique_ptr<Statement> interpretStatement(std::vector<Jago::JagoToken> tokens, int& index) const;
-        [[nodiscard]] static std::unique_ptr<Expression> interpretExpression(std::vector<Jago::JagoToken> tokens, int& index);
+        [[nodiscard]] static std::unique_ptr<Expression> interpretExpression(std::vector<Jago::JagoToken> tokens, int& index, uint32_t len = -1);
     };
 
 } // Jago

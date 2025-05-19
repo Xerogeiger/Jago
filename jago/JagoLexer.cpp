@@ -40,7 +40,7 @@ namespace Jago {
     std::vector<std::string_view> JagoLexer::Lex(const std::string &value, bool includeLineEndings) {
         std::vector<std::string_view> tokens;
 
-        uint32_t wordStart = -1;
+        int wordStart = -1;
 
         LexerSettings& lexerSettings = this->settings;
         LexerCommentSettings& commentSettings = lexerSettings.commentSettings;

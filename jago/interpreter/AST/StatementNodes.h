@@ -73,6 +73,20 @@ namespace Jago {
         void accept(Visitor& visitor) override;
         void prettyPrint(std::ostream &out, int indent) const override;
     };
+
+    class IfStatement final : public Statement {
+    public:
+        std::unique_ptr<ASTNode> trueCase;
+        std::unique_ptr<ASTNode> falseCase;
+        std::unique_ptr<Expression> condition;
+
+        explicit IfStatement(std::unique_ptr<ASTNode> trueCase, std::unique_ptr<ASTNode> falseCase, std::unique_ptr<Expression> condition)
+            : Statement(), trueCase(std::move(trueCase)), falseCase(std::move(falseCase)), condition(std::move(condition)) {
+        }
+
+        void accept(Visitor& visitor) override;
+        void prettyPrint(std::ostream &out, int indent) const override;
+    };
 }
 
 #endif //STATEMENTNODES_H

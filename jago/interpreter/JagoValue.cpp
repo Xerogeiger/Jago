@@ -13,6 +13,14 @@ namespace Jago {
             return std::get<bool>(value) ? "true" : "false";
         } else if (std::holds_alternative<char>(value)) {
             return std::string{std::get<char>(value)};
+        } else if (std::holds_alternative<int16_t>(value)) {
+            return std::to_string(std::get<int16_t>(value));
+        } else if (std::holds_alternative<int8_t>(value)) {
+            return std::to_string(std::get<int8_t>(value));
+        } else if (std::holds_alternative<int64_t>(value)) {
+            return std::to_string(std::get<int64_t>(value));
+        } else if (std::holds_alternative<float>(value)) {
+            return std::to_string(std::get<float>(value));
         } else {
             throw std::runtime_error("Cannot convert to string type: " + type.getTypeName());
         }
@@ -53,6 +61,8 @@ namespace Jago {
             return std::get<int64_t>(value);
         } else if (std::holds_alternative<int>(value)) {
             return static_cast<int64_t>(std::get<int>(value));
+        } else if (std::holds_alternative<bool>(value)) {
+            return std::get<bool>(value) ? 1 : 0;
         } else {
             return 0;
         }

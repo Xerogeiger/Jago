@@ -25,7 +25,7 @@ bool Jago::StringEquals(const std::string_view& left, const std::string_view& ri
 bool Jago::IsSymbol(std::string value, uint32_t from, uint32_t to, std::string symbol) {
     if(symbol.length() == 0 || from == to)
         return false;
-    if(from + symbol.length() >= to)
+    if(from + symbol.length() > to)
         return false;
 
     for(uint32_t i = 0; i < symbol.length(); i++) {

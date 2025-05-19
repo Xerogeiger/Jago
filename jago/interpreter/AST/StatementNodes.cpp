@@ -54,4 +54,18 @@ namespace Jago {
             statement->prettyPrint(out, indent + 1);
         }
     }
+    void IfStatement::accept(Visitor &visitor) {
+        visitor.visit(*this);
+    }
+
+    void IfStatement::prettyPrint(std::ostream &out, int indent) const {
+        out << std::string(indent, '\t') << "IfStatement: " << std::endl;
+        condition->prettyPrint(out, indent + 1);
+        out << std::string(indent, '\t') << "Body: " << std::endl;
+        trueCase->prettyPrint(out, indent + 1);
+        if (falseCase) {
+            out << std::string(indent, '\t') << "Else Body: " << std::endl;
+            falseCase->prettyPrint(out, indent + 1);
+        }
+    }
 } // namespace Jago

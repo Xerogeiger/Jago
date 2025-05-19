@@ -4,6 +4,7 @@
 
 #ifndef JAGOMETHOD_H
 #define JAGOMETHOD_H
+#include <functional>
 #include <memory>
 
 #include "AST/ASTNode.h"
@@ -12,17 +13,21 @@
 
 
 namespace Jago {
+
+    class Visitor;
+
     struct JagoParameter {
         JagoType type;
         std::string name;
     };
 
     class JagoMethod {
-    private:
+    protected:
         std::unique_ptr<ASTNode> body;
         std::vector<JagoParameter> parameters;
 
     public:
+        virtual ~JagoMethod() = default;
         JagoMethod() = default;
 
         JagoMethod(std::unique_ptr<ASTNode> body, std::vector<JagoParameter> parameters) : body(std::move(body)), parameters(std::move(parameters)) {}
@@ -31,8 +36,15 @@ namespace Jago {
             return parameters;
         }
 
-        JagoValue invoke(JagoScope& methodScope) {
-            return {};
+        virtual JagoValue invoke(Visitor &visitor, JagoScope &methodScope);
+    };
+
+    class NativeMethod : public JagoMethod {
+        std::function<JagoValue(JagoScope& scope)> function;
+    public:
+        NativeMethod(std::vector<JagoParameter> parameters, std::function<JagoValue(JagoScope& scope)> function) : JagoMethod(nullptr, std::move(parameters)), function(std::move(function)) {}
+        JagoValue invoke(Visitor &visitor, JagoScope &methodScope) override {
+            return function(methodScope);
         }
     };
 }

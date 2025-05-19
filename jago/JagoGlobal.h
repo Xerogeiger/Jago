@@ -101,6 +101,16 @@ namespace Jago {
             new JagoKeyword("catch", KeywordType::StatementDeclaration);
     [[maybe_unused]] const JagoKeyword *const FinallyStatementKeyword =
             new JagoKeyword("finally", KeywordType::StatementDeclaration);
+    [[maybe_unused]] const JagoKeyword *const WhileStatementKeyword =
+            new JagoKeyword("while", KeywordType::StatementDeclaration);
+    [[maybe_unused]] const JagoKeyword *const DoWhileStatementKeyword =
+            new JagoKeyword("do", KeywordType::StatementDeclaration);
+    [[maybe_unused]] const JagoKeyword *const BreakStatementKeyword =
+            new JagoKeyword("break", KeywordType::StatementDeclaration);
+    [[maybe_unused]] const JagoKeyword *const ContinueStatementKeyword =
+            new JagoKeyword("continue", KeywordType::StatementDeclaration);
+    [[maybe_unused]] const JagoKeyword *const ReturnStatementKeyword =
+            new JagoKeyword("return", KeywordType::StatementDeclaration);
 
     [[maybe_unused]] const JagoKeyword *const ClassDeclarationKeyword =
             new JagoKeyword("class", KeywordType::TypeDeclaration);
@@ -160,6 +170,11 @@ namespace Jago {
         TryStatementKeyword,
         CatchStatementKeyword,
         FinallyStatementKeyword,
+        WhileStatementKeyword,
+        DoWhileStatementKeyword,
+        BreakStatementKeyword,
+        ContinueStatementKeyword,
+        ReturnStatementKeyword,
 
         ClassDeclarationKeyword,
         InterfaceDeclarationKeyword,

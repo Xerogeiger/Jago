@@ -3,3 +3,9 @@
 //
 
 #include "JagoMethod.h"
+#include "AST/Visitor.h"
+
+Jago::JagoValue Jago::JagoMethod::invoke(Visitor &visitor, JagoScope &methodScope) {
+    body->accept(visitor);
+    return visitor.getResult();
+}
