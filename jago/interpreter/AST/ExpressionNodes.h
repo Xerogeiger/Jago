@@ -6,6 +6,7 @@
 #define EXPRESSIONNODES_H
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "ASTNode.h"
 
@@ -72,6 +73,18 @@ namespace Jago {
     class MethodCallExpression : public Expression {
     public:
         MethodCallExpression(std::string name, std::vector<std::unique_ptr<Expression>> arguments)
+            : name(name), arguments(std::move(arguments)) {}
+
+        void accept(Visitor& visitor) override;
+        void prettyPrint(std::ostream &out, int indent) const override;
+
+        std::string name;
+        std::vector<std::unique_ptr<Expression>> arguments;
+    };
+
+    class NewExpression : public Expression {
+    public:
+        NewExpression(std::string name, std::vector<std::unique_ptr<Expression>> arguments)
             : name(name), arguments(std::move(arguments)) {}
 
         void accept(Visitor& visitor) override;

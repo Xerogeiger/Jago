@@ -4,6 +4,7 @@
 
 #include "StatementNodes.h"
 
+#include "../JagoEvaluator.h"
 #include "Visitor.h"
 
 namespace Jago {
@@ -66,6 +67,30 @@ namespace Jago {
         if (falseCase) {
             out << std::string(indent, '\t') << "Else Body: " << std::endl;
             falseCase->prettyPrint(out, indent + 1);
+        }
+    }
+    void IncrementalForStatement::accept(Visitor &visitor) {
+        visitor.visit(*this);
+    }
+    void IncrementalForStatement::prettyPrint(std::ostream &out, int indent) const {
+        std::cout << std::string(indent, '\t') << "IncrementalForStatement: " << std::endl;
+        std::cout << std::string(indent, '\t') << "Initialization: " << std::endl;
+        initialization->prettyPrint(out, indent + 1);
+        std::cout << std::string(indent, '\t') << "Condition: " << std::endl;
+        condition->prettyPrint(out, indent + 1);
+        std::cout << std::string(indent, '\t') << "Increment: " << std::endl;
+        increment->prettyPrint(out, indent + 1);
+        std::cout << std::string(indent, '\t') << "Body: " << std::endl;
+        body->prettyPrint(out, indent + 1);
+    }
+    void ContinueStatement::accept(Visitor &visitor) { visitor.visit(*this); }
+
+    void ClassDeclarationStatement::accept(Visitor &visitor) { visitor.visit(*this); }
+    void ClassDeclarationStatement::prettyPrint(std::ostream &out, int indent) const {
+        out << std::string(indent, '\t') << "ClassDeclarationStatement: " << this->name << std::endl;
+        out << std::string(indent, '\t') << "Members: " << std::endl;
+        for (const auto &member: methods) {
+            out << std::string(indent, '\t') << "Member: " << member->getName() << std::endl;
         }
     }
 } // namespace Jago

@@ -9,13 +9,14 @@
 #include "../PrimitiveTypes.h"
 #include "AST/ExpressionNodes.h"
 #include "AST/StatementNodes.h"
+#include "JagoClass.h"
 
 namespace Jago {
     JagoEvaluator::JagoEvaluator() {
-        this->globalScope = new JagoScope(); // Global scope
+        this->globalScope = std::make_shared<JagoScope>(nullptr); // Global scope
         this->globalScope->setVariable("true", JagoValue(true));
         this->globalScope->setVariable("false", JagoValue(false));
-        this->currentScope = *this->globalScope;
+        this->currentScope = this->globalScope;
         defineGlobalFunctions();
     }
 
@@ -29,13 +30,13 @@ namespace Jago {
         } else if (literal.value == "true" || literal.value == "false") {
             result = JagoValue(literal.value == "true");
         } else if (literal.value.contains('.')) {
-            result = JagoValue(std::stod(std::string(literal.value)));
+            result = JagoValue(std::stod(literal.value));
         } else {
-            result = JagoValue(std::stoi(std::string(literal.value)));
+            result = JagoValue(std::stoi(literal.value));
         }
     }
     void JagoEvaluator::visit(Variable &variable) {
-        result = currentScope.getVariable(variable.name);
+        result = currentScope->getVariable(variable.name);
         resultVariableName = variable.name;
     }
 
@@ -87,9 +88,9 @@ namespace Jago {
                 result = JagoValue(left.asLong() / right.asLong());
             }
         } else if (op == "=") {
-            if (currentScope.hasVariable(leftVariableName)) {
-                JagoValue currentValue = currentScope.getVariable(leftVariableName);
-                this->currentScope.setVariable(leftVariableName, right.castToType(currentValue.type));
+            if (currentScope->hasVariable(leftVariableName)) {
+                JagoValue currentValue = currentScope->getVariable(leftVariableName);
+                this->currentScope->setVariable(leftVariableName, right.castToType(currentValue.type));
             } else {
                 throw std::runtime_error("Cannot assign to undeclared variable");
             }
@@ -107,6 +108,27 @@ namespace Jago {
             result = JagoValue(left >= right);
         } else if (op == "<=") {
             result = JagoValue(left <= right);
+        } else if (op == "+=") {
+            binaryExpression.left->accept(*this);
+            auto leftVariableName = resultVariableName;
+            binaryExpression.right->accept(*this);
+            auto right = result;
+            auto left = currentScope->getVariable(leftVariableName);
+            if (left == Type::STRING || right == Type::STRING) {
+                auto leftStr = left.asString();
+                auto rightStr = right.asString();
+                result = JagoValue(leftStr + rightStr);
+            } else if (left == Type::DOUBLE || right == Type::DOUBLE) {
+                result = JagoValue(left.asDouble() + right.asDouble());
+            } else {
+                result = JagoValue(left.asLong() + right.asLong());
+            }
+            if (currentScope->hasVariable(leftVariableName)) {
+                JagoValue currentValue = currentScope->getVariable(leftVariableName);
+                this->currentScope->setVariable(leftVariableName, result.castToType(currentValue.type));
+            } else {
+                throw std::runtime_error("Cannot assign to undeclared variable");
+            }
         }
     }
 
@@ -115,6 +137,8 @@ namespace Jago {
 
     void JagoEvaluator::visit(ReturnStatement &returnStatement) {
         returnStatement.value->accept(*this);
+
+        throw ReturnSignal{result};
     }
 
     void JagoEvaluator::visit(AssignmentStatement &assignmentStatement) {
@@ -135,7 +159,7 @@ namespace Jago {
             default:;
         }
 
-        currentScope.setVariable(assignmentStatement.variableName, variableValue);
+        currentScope->setVariable(assignmentStatement.variableName, variableValue);
     }
 
     void JagoEvaluator::visit(Program &program) {
@@ -144,15 +168,30 @@ namespace Jago {
         }
     }
     void JagoEvaluator::visit(MethodDeclarationStatement methodStatement) {
-        currentScope.setFunction(methodStatement.name,
-                           std::make_shared<JagoMethod>(std::move(methodStatement.body), methodStatement.parameters));
+        currentScope->setFunction(methodStatement.name,
+                            std::make_shared<JagoMethod>(methodStatement.name, std::move(methodStatement.body), methodStatement.parameters));
     }
+
+    struct ScopeGuard {
+        JagoEvaluator& E;
+        std::shared_ptr<JagoScope> old;
+        ScopeGuard(JagoEvaluator& e, std::shared_ptr<JagoScope> nxt)
+          : E(e), old(std::move(e.currentScope)) {
+            e.currentScope = std::move(nxt);
+        }
+        ~ScopeGuard() { E.currentScope = std::move(old); }
+    };
+
+
     void JagoEvaluator::visit(const MethodCallExpression &methodCallExpression) {
-        auto newScope = JagoScope(currentScope);
+        auto parent = currentScope;
+
+        auto function = currentScope->getFunction(methodCallExpression.name);
+
+        auto child  = std::make_shared<JagoScope>(parent);
+        ScopeGuard g{*this, child};
 
         int index = 0;
-
-        auto function = currentScope.getFunction(methodCallExpression.name);
 
         for (const auto &param: methodCallExpression.arguments) {
             param->accept(*this);
@@ -161,18 +200,23 @@ namespace Jago {
                 throw std::runtime_error("Too many arguments");
             }
 
-            newScope.setVariable(function->getParameters()[index++].name, result);
+            child->setVariable(function->getParameters()[index++].name, result);
         }
 
-        this->currentScope = newScope;
-        this->result = function->invoke(*this, newScope);
+        try {
+            this->result = function->invoke(*this, child);
+        } catch (ReturnSignal &signal) {
+            this->result = signal.value;
+            return;
+        }
     }
 
     void JagoEvaluator::defineGlobalFunctions() {
-        currentScope.setFunction("print", std::make_shared<NativeMethod>(
+        currentScope->setFunction("print", std::make_shared<NativeMethod>(
+            "print",
                 std::vector<JagoParameter>{JagoParameter{Jago::Type::STRING, "value"}},
-                [](JagoScope &scope) {
-                    auto value = scope.getVariable("value");
+                [](std::shared_ptr<JagoScope> scope) {
+                    auto value = scope->getVariable("value");
                     std::cout << "STD Out: " << value.asString() << std::endl;
                     return JagoValue();
                 }));
@@ -181,7 +225,38 @@ namespace Jago {
     void JagoEvaluator::dump(std::ostream &out) const {
         out << "Last Result: " << result << std::endl;
 
-        currentScope.dump(out);
+        currentScope->dump(out);
+    }
+    void JagoEvaluator::visit(const IncrementalForStatement &forStatement) {
+        forStatement.initialization->accept(*this);
+
+        forStatement.condition->accept(*this);
+        auto condition = result.asLong();
+
+        try {
+            while (condition) {
+                try {
+                    forStatement.body->accept(*this);
+                } catch (ContinueSignal &signal) {
+                    std::cout << "Loop continuing" << std::endl;
+                }
+                forStatement.increment->accept(*this);
+                forStatement.condition->accept(*this);
+                condition = result.asLong();
+            }
+        } catch (BreakSignal &signal) {
+            std::cout << "Break signal" << std::endl;
+        }
+    }
+    void JagoEvaluator::visit(const ClassDeclarationStatement &literal) {
+        std::shared_ptr<JagoClass> jagoClass = std::make_shared<JagoClass>(literal.name);
+        for (const auto &method: literal.methods) {
+            jagoClass->addMethod(method);
+        }
+        currentScope->setClass(literal.name, jagoClass);
+    }
+    void JagoEvaluator::visit(const NewExpression &literal) {
+        
     }
 
     void JagoEvaluator::visit(const IfStatement &statement) {
@@ -194,5 +269,9 @@ namespace Jago {
                 statement.falseCase->accept(*this);
             }
         }
+    }
+
+    void JagoEvaluator::visit(const ContinueStatement &continueStatement) {
+        throw ContinueSignal{};
     }
 } // Jago

@@ -19,13 +19,14 @@ namespace Jago {
     public:
         JagoType type;
 
-        std::variant<int32_t, int64_t, int8_t, int16_t, char, float, double, bool, std::shared_ptr<std::string>, void*> value;
+        std::variant<std::monostate,    // for VOID
+        int32_t, int64_t, int8_t, int16_t, char, float, double, bool, std::string> value;
 
-        JagoValue() : type(Jago::Type::VOID), value(nullptr) {
+        JagoValue() : type(Jago::Type::VOID), value(std::monostate{}) {
         }
 
         // Constructor for std::string*
-        explicit JagoValue(const std::string& value) : type(Jago::Type::STRING), value(std::make_shared<std::string>(value)) {
+        explicit JagoValue(const std::string& value) : type(Jago::Type::STRING), value(value) {
         }
 
         explicit JagoValue(const int32_t value) : type(Jago::Type::INT), value(value) {
@@ -53,8 +54,8 @@ namespace Jago {
         }
 
         [[nodiscard]] std::string toString() const noexcept {
-            if (std::holds_alternative<std::shared_ptr<std::string>>(value)) {
-                return *std::get<std::shared_ptr<std::string>>(value); // Dereference shared_ptr
+            if (std::holds_alternative<std::string>(value)) {
+                return std::get<std::string>(value); // Dereference shared_ptr
             }
             return this->asString(); // Return direct string
         }

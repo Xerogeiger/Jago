@@ -87,6 +87,44 @@ namespace Jago {
         void accept(Visitor& visitor) override;
         void prettyPrint(std::ostream &out, int indent) const override;
     };
+
+    class IncrementalForStatement final : public Statement {
+    public:
+        std::unique_ptr<ASTNode> initialization;
+        std::unique_ptr<ASTNode> condition;
+        std::unique_ptr<ASTNode> increment;
+        std::unique_ptr<ASTNode> body;
+
+        explicit IncrementalForStatement(std::unique_ptr<ASTNode> initialization,
+                                         std::unique_ptr<ASTNode> condition,
+                                         std::unique_ptr<ASTNode> increment,
+                                         std::unique_ptr<ASTNode> body) :
+            Statement(), initialization(std::move(initialization)), condition(std::move(condition)),
+            increment(std::move(increment)), body(std::move(body)) {}
+        void accept(Visitor &visitor) override;
+        void prettyPrint(std::ostream &out, int indent) const override;
+    };
+
+    class ContinueStatement final : public Statement {
+    public:
+        void accept(Visitor &visitor) override;
+        void prettyPrint(std::ostream &out, int indent) const override {
+            out << std::string(indent, '\t') << "ContinueStatement" << std::endl;
+        }
+    };
+
+    class ClassDeclarationStatement final : public Statement {
+    public:
+        std::string name;
+        std::vector<std::shared_ptr<JagoMethod>> methods;
+
+        explicit ClassDeclarationStatement(std::string_view name, std::vector<std::shared_ptr<JagoMethod>> members)
+            : Statement(), name(name), methods(std::move(members)) {
+        }
+
+        void accept(Visitor &visitor) override;
+        void prettyPrint(std::ostream &out, int indent) const override;
+    };
 }
 
 #endif //STATEMENTNODES_H

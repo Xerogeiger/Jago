@@ -3,8 +3,8 @@
 
 namespace Jago {
     std::string JagoValue::asString() const {
-        if (std::holds_alternative<std::shared_ptr<std::string>>(value)) {
-            return *std::get<std::shared_ptr<std::string>>(value);
+        if (std::holds_alternative<std::string>(value)) {
+            return std::get<std::string>(value);
         } else if (std::holds_alternative<double>(value)) {
             return std::to_string(std::get<double>(value));
         } else if (std::holds_alternative<int>(value)) {
@@ -115,30 +115,28 @@ namespace Jago {
     bool JagoValue::operator==(const JagoValue &other) const {
         if (&this->type == &Type::VOID || &other.type == &Type::VOID) {
             return false;
-        } else if (&this->type != &other.type) {
-            return false;
-        } else {
-            if (this->type == Type::STRING) {
-                return this->toString() == other.toString();
-            } else if (this->type == Type::DOUBLE) {
-                return this->toDouble() == other.toDouble();
-            } else if (this->type == Type::FLOAT) {
-                return this->toFloat() == other.toFloat();
-            } else if (this->type == Type::INT) {
-                return this->toInt() == other.toInt();
-            } else if (this->type == Type::BOOLEAN) {
-                return this->toBool() == other.toBool();
-            } else if (this->type == Type::CHAR) {
-                return this->toChar() == other.toChar();
-            } else if (this->toByte() == other.toByte()) {
-                return this->toByte() == other.toByte();
-            } else if (this->toShort() == other.toShort()) {
-                return this->toShort() == other.toShort();
-            } else if (this->toLong() == other.toLong()) {
-                return this->toLong() == other.toLong();
+        } else if (this->type == Type::STRING) {
+            if (other.type == Type::STRING) {
+                return this->asString() == other.asString();
+            } else {
+                return false;
             }
-
-            return false;
+        } else {
+            if (this->type == Type::DOUBLE || other.type == Type::DOUBLE) {
+                return this->asDouble() == other.asDouble();
+            } else if (this->type == Type::FLOAT || other.type == Type::FLOAT) {
+                return this->asDouble() == other.asDouble();
+            } else if (this->type == Type::LONG || other.type == Type::LONG) {
+                return this->asLong() == other.asLong();
+            } else if (this->type == Type::INT || other.type == Type::INT) {
+                return this->asInt() == other.asInt();
+            } else if (this->type == Type::CHAR || other.type == Type::CHAR) {
+                return this->asString() == other.asString();
+            } else if (this->type == Type::BOOLEAN || other.type == Type::BOOLEAN) {
+                return this->asLong() == other.asLong();
+            } else {
+                return false;
+            }
         }
     }
 
@@ -185,7 +183,7 @@ namespace Jago {
 
     JagoValue &JagoValue::operator=(const std::string &value) {
         this->type = Type::STRING;
-        this->value = std::make_shared<std::string>(value);
+        this->value = value;
         return *this;
     }
 
@@ -203,7 +201,7 @@ namespace Jago {
 
     std::ostream &operator<<(std::ostream &out, const JagoValue &value) {
         if (value.type == Type::STRING) {
-            out << "String Value: " << *std::get<std::shared_ptr<std::string>>(value.value);
+            out << "String Value: " << std::get<std::string>(value.value);
         } else if (value.type == Type::DOUBLE) {
             out << "Double Value: " << std::to_string(std::get<double>(value.value));
         } else if (value.type == Type::FLOAT) {

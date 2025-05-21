@@ -42,5 +42,17 @@ namespace Jago {
 
     void MethodCallExpression::prettyPrint(std::ostream &out, int indent) const {
         out << std::string(indent, '\t') << "MethodCallExpression: " << name << std::endl;
+        out << std::string(indent, '\t') << "Arguments: " << arguments.size() << std::endl;
+        for (const auto &arg: arguments) {
+            arg->prettyPrint(out, indent + 1);
+        }
+    }
+    void NewExpression::accept(Visitor &visitor) { visitor.visit(*this); }
+    void NewExpression::prettyPrint(std::ostream &out, int indent) const {
+        out << std::string(indent, '\t') << "NewExpression: " << name << std::endl;
+        out << std::string(indent, '\t') << "Arguments: " << arguments.size() << std::endl;
+        for (const auto &arg: arguments) {
+            arg->prettyPrint(out, indent + 1);
+        }
     }
 } // namespace Jago

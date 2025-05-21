@@ -31,6 +31,10 @@ namespace Jago {
         virtual void visit(const MethodCallExpression &literal) = 0;
         virtual JagoValue getResult() = 0;
         virtual void visit(const IfStatement &statement) = 0;
+        virtual void visit(const IncrementalForStatement &literal) = 0;
+        virtual void visit(const ContinueStatement &literal) = 0;
+        virtual void visit(const ClassDeclarationStatement &literal) = 0;
+        virtual void visit(const NewExpression & literal) = 0;
     };
 
 }

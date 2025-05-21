@@ -9,7 +9,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Enabling extra warnings and sanitizers for Debug build.")
 
     # Common warning flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
 add_executable(Jago main.cpp jago/JagoLexer.cpp jago/JagoLexer.h jago/JagoToken.cpp jago/JagoToken.h jago/JagoUtils.h jago/JagoUtils.cpp jago/JagoParser.cpp jago/JagoParser.h jago/JagoOperator.cpp jago/JagoOperator.h jago/JagoGlobal.h jago/JagoKeyword.cpp jago/JagoKeyword.h jago/compiler/JagoCompiler.cpp jago/compiler/JagoCompiler.h jago/JagoBytecodes.h jago/exceptions/JagoCompilerException.h jago/JagoExpressionFlag.h jago/PrimitiveTypes.h
@@ -33,4 +33,8 @@ add_executable(Jago main.cpp jago/JagoLexer.cpp jago/JagoLexer.h jago/JagoToken.
         jago/interpreter/JagoValue.h
         jago/interpreter/JagoType.cpp
         jago/interpreter/JagoType.h
+        jago/interpreter/JagoClass.h
+        jago/interpreter/JagoClass.cpp
+        jago/interpreter/helper/ClassDeclarationHandler.h
+        jago/interpreter/helper/ClassDeclarationHandler.cpp
 )

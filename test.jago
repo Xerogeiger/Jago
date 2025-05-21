@@ -1,5 +1,7 @@
-if(true) {
-    print("Hello, World!");
-} else {
-    print("Goodbye, World!");
+class Test {
+    int a(int i) {
+        return i;
+    }
 }
+
+print(new Test().a(1));

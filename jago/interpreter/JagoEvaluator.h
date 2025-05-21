@@ -10,14 +10,23 @@
 
 namespace Jago {
 
+    struct ReturnSignal {
+        JagoValue value;
+    };
+
+    struct ContinueSignal {};
+    struct BreakSignal {};
+
     class JagoEvaluator final : public Visitor {
     protected:
         std::string resultVariableName;
         JagoValue result = JagoValue();
-        JagoScope currentScope;
-        JagoScope *globalScope = nullptr;
+        bool definingType = false;
+        std::shared_ptr<JagoScope> globalScope;
 
     public:
+        std::shared_ptr<JagoScope> currentScope;
+
         void defineGlobalFunctions();
         explicit JagoEvaluator();
 
@@ -31,14 +40,16 @@ namespace Jago {
         void visit(MethodDeclarationStatement methodStatement) override;
         void visit(const MethodCallExpression &methodCallExpression) override;
         void visit(const IfStatement &statement) override;
-
-        [[nodiscard]] JagoScope &getCurrentScope() { return currentScope; }
+        void visit(const ContinueStatement &continueStatement) override;
 
         [[nodiscard]] JagoValue getResult() override { return result; }
 
         [[nodiscard]] std::string getResultVariableName() const { return resultVariableName; }
 
         void dump(std::ostream &out) const;
+        void visit(const IncrementalForStatement &forStatement) override;
+        void visit(const ClassDeclarationStatement &literal) override;
+        void visit(const NewExpression &literal) override;
     };
 } // Jago
 

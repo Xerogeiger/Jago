@@ -46,10 +46,21 @@ namespace Jago {
         LexerCommentSettings& commentSettings = lexerSettings.commentSettings;
 
         bool inString = false;
-        bool isNumber = true;
+        bool isNumber = false;
 
         for(uint32_t i = 0; i < value.length(); i++) {
             char c = value[i];
+
+            if (wordStart == -1) {
+                if (std::__format::__is_digit(c)) {
+                    isNumber = true;
+                } else if (Contains(lexerSettings.allowedWordCharacters, c)) {
+                    wordStart = i;
+                    isNumber = false;
+                } else if (c == settings.lineEnding && includeLineEndings) {
+                    tokens.emplace_back(value.data() + i, 1);
+                }
+            }
 
             if(c =='\"') {
                 if (wordStart != -1)
@@ -57,7 +68,7 @@ namespace Jago {
 
                 if (inString) {
                     inString = false;
-                    isNumber = true;
+                    isNumber = false;
                     wordStart = -1;
                 } else {
                     wordStart = i;
@@ -93,7 +104,7 @@ namespace Jago {
             } else if(IsSymbol(value, i, value.length(), commentSettings.blockCommentStart)) {
                 if(wordStart != -1) {
                     AddWordToken(wordStart, i);
-                    isNumber = true;
+                    isNumber = false;
                     wordStart = -1;
                 }
 
@@ -113,13 +124,13 @@ namespace Jago {
             } else if(Contains(lexerSettings.whitespaceCharacters, c)) {
                 if(wordStart != -1) {
                     AddWordToken(wordStart, i);
-                    isNumber = true;
+                    isNumber = false;
                     wordStart = -1;
                 }
             } else {
                 if(wordStart != -1) {
                     AddWordToken(wordStart, i);
-                    isNumber = true;
+                    isNumber = false;
                     wordStart = -1;
                 }
 

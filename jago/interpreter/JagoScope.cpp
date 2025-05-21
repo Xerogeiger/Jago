@@ -13,19 +13,22 @@ namespace Jago {
     Jago::JagoValue JagoScope::getVariable(const std::string_view name) {
         if (variables.contains(name.data()))
             return variables[name.data()];
-        if (parentScope != nullptr)
+        if (parentScope.get())
             return parentScope->getVariable(name);
 
         throw std::runtime_error("Variable not found: " + std::string(name));
     }
 
-    std::shared_ptr<Jago::JagoMethod> JagoScope::getFunction(const std::string_view name) {
-        if (functions.contains(name.data()))
-            return functions[name.data()];
-        if (parentScope != nullptr)
-            return parentScope->getFunction(name);
+    std::shared_ptr<Jago::JagoMethod> JagoScope::getFunction(const std::string &name) {
+        auto it = functions.find(name);
+        if (it != functions.end())
+            return it->second;
 
-        throw std::runtime_error("Function not found: " + std::string(name));
+        if (parentScope.get()) {
+            return parentScope->getFunction(name);
+        }
+
+        throw std::runtime_error("Function not found: " + name);
     }
 
     void JagoScope::setVariable(std::string_view name, Jago::JagoValue value) {

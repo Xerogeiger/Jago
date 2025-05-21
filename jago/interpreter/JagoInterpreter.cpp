@@ -12,6 +12,7 @@
 #include "AST/ASTNode.h"
 #include "AST/StatementNodes.h"
 #include "JagoMethod.h"
+#include "helper/ClassDeclarationHandler.h"
 
 namespace Jago {
     ASTNode* JagoInterpreter::interpret(const std::vector<Jago::JagoToken> tokens) const {
@@ -33,32 +34,6 @@ namespace Jago {
         return program;
     }
 
-    JagoType getTypeFromString(std::string typeName) {
-        if (Jago::Type::INT.getTypeName() == typeName) {
-            return Jago::Type::INT;
-        } else if (Type::FLOAT.getTypeName() == typeName) {
-            return Type::FLOAT;
-        } else if (Type::BOOLEAN.getTypeName() == typeName) {
-            return Type::BOOLEAN;
-        } else if (Type::STRING.getTypeName() == typeName) {
-            return Type::STRING;
-        } else if (Type::CHAR.getTypeName() == typeName) {
-            return Type::CHAR;
-        } else if (Type::LONG.getTypeName() == typeName) {
-            return Type::LONG;
-        } else if (Type::DOUBLE.getTypeName() == typeName) {
-            return Type::DOUBLE;
-        } else if (Type::BYTE.getTypeName() == typeName) {
-            return Type::BYTE;
-        } else if (Type::SHORT.getTypeName() == typeName) {
-            return Type::SHORT;
-        } else if (Type::VOID.getTypeName() == typeName) {
-            return Type::VOID;
-        } else {
-            return Type::OBJECT;
-        }
-    }
-
     int findClosingParen(const std::vector<JagoToken>& tokens, int openPos) {
         int depth = 1;
         for (int i = openPos + 1; i < (int)tokens.size(); ++i) {
@@ -72,6 +47,7 @@ namespace Jago {
 
     std::unique_ptr<Statement> JagoInterpreter::interpretStatement(std::vector<Jago::JagoToken> tokens,
         int &index) const {
+        std::cout << "Processing statement token: " << tokens[index] << std::endl;
         if (tokens[index].TokenValue == "return") {
             index += 1;
             auto returnStatement = std::make_unique<ReturnStatement>(interpretExpression(tokens, index));
@@ -158,7 +134,10 @@ namespace Jago {
 
                         trueCase = std::make_unique<ScopeBody>(std::move(statements));
                     } else {
-                        trueCase = interpretExpression(tokens, index);
+                        if (tokens[index].TokenType == Token::JagoTokenType::Keyword)
+                            trueCase = interpretStatement(tokens, index);
+                        else
+                            trueCase = interpretExpression(tokens, index);
                         assert(tokens[index].TokenType == Token::JagoTokenType::StatementEnd);
                         index += 1; // Skip the statement end
                     }
@@ -193,6 +172,42 @@ namespace Jago {
                 } else {
                     throw Jago::JagoCompilerException("Missing opening parenthesis for if statement");
                 }
+            } else if (tokens[index].TokenValue == "for") {
+                index += 1; // Skip the for keyword
+                assert(tokens[index].TokenType == Token::JagoTokenType::ParenthesisOpen);
+                int closingParenthesis = findClosingParen(tokens, index);
+                index += 1; // Skip the parenthesis open
+                auto initStatement = interpretStatement(tokens, index); // Initialization statement
+                assert(tokens[index].TokenType == Token::JagoTokenType::StatementEnd);
+                index += 1; // Skip the semicolon
+                auto condition = interpretExpression(tokens, index); // Condition expression
+                assert(tokens[index].TokenType == Token::JagoTokenType::StatementEnd);
+                index += 1; // Skip the semicolon
+                auto increment = interpretExpression(tokens, index, closingParenthesis); // Increment expression
+                assert(tokens[index].TokenType == Token::JagoTokenType::ParenthesisClose);
+                index += 1; // Skip the parenthesis close
+                assert(tokens[index].TokenType == Token::JagoTokenType::ScopeOpen);
+                index += 1; // Skip the scope open
+                std::vector<std::unique_ptr<ASTNode>> statements;
+                while (tokens[index].TokenType != Token::JagoTokenType::ScopeClose) {
+                    // Interpret statement or expression
+                    if (tokens[index].TokenType == Token::JagoTokenType::Keyword)
+                        statements.push_back(interpretStatement(tokens, index));
+                    else
+                        statements.push_back(interpretExpression(tokens, index));
+
+                    if (tokens[index].TokenType == Token::JagoTokenType::StatementEnd) {
+                        index += 1;
+                    }
+                }
+                index += 1; // Skip the scope close
+                return std::make_unique<IncrementalForStatement>(std::move(initStatement), std::move(condition), std::move(increment), std::make_unique<ScopeBody>(std::move(statements)));
+            } else if (tokens[index].TokenValue == "continue") {
+                index += 1; // Skip the continue keyword
+                assert(tokens[index].TokenType == Token::JagoTokenType::StatementEnd);
+                return std::make_unique<ContinueStatement>();
+            } else if (tokens[index].TokenValue == "class") {
+                return ClassHandler.handle(*this, tokens, index);
             } else if (isPrimitiveType(tokens[index].TokenValue)) {
                 auto typeName = tokens[index].TokenValue;
 
@@ -227,7 +242,7 @@ namespace Jago {
             }
         }
 
-        throw Jago::JagoCompilerException("Invalid statement");
+        throw Jago::JagoCompilerException("Invalid statement, statement must start with a keyword");
         return nullptr;
     }
 
@@ -240,162 +255,229 @@ namespace Jago {
         return -1; // Not found
     }
 
-    std::unique_ptr<Expression>
-JagoInterpreter::interpretExpression(std::vector<Jago::JagoToken> tokens, int &index, uint32_t len) {
-        if (len == -1)
-            len = tokens.size();
+std::unique_ptr<Expression>
+JagoInterpreter::interpretExpression(const std::vector<JagoToken>& tokens,
+                                     int& index,
+                                     uint32_t len) {
+    // If caller passed -1, use the full token list
+    if (len == static_cast<uint32_t>(-1))
+        len = tokens.size();
 
-    std::stack<JagoToken> operatorStack; // Operators
-    std::stack<std::unique_ptr<Expression>> expressionStack; // Expression
+    std::stack<JagoToken>                   operatorStack;
+    std::stack<std::unique_ptr<Expression>> expressionStack;
 
-    // Define operator precedence
-    auto precedence = [](const std::string &opStr) -> int {
-        for (const auto& op: Jago::DefaultJagoOperators) {
-            if (op.OperatorSymbol == opStr) {
+    // ----------------------------------------------------------------
+    // 1) Precedence and associativity lookups
+    // ----------------------------------------------------------------
+    enum class Assoc { Left, Right };
+
+    auto precedence = [&](const std::string &opStr) -> int {
+        for (auto &op : Jago::DefaultJagoOperators) {
+            if (op.OperatorSymbol == opStr)
                 return op.Precedence;
-            }
         }
-        return -1; // Invalid operator precedence
+        throw std::runtime_error("Unknown operator: " + opStr);
     };
 
-    // While not at the end of the statement
-    while (tokens[index].TokenType != Token::JagoTokenType::StatementEnd &&
-        tokens[index].TokenType != Token::JagoTokenType::ScopeClose && index < len) {
+    auto getAssociativity = [&](const std::string &opStr) -> Assoc {
+        for (auto &op : Jago::DefaultJagoOperators) {
+            if (op.OperatorSymbol == opStr) {
+                switch (op.OperatorType) {
+                    // make all assignments & exponentiation right-assoc
+                    case Operator::OperatorType::Assignment:
+                    case Operator::OperatorType::AdditionAssignment:
+                    case Operator::OperatorType::SubtractionAssignment:
+                    case Operator::OperatorType::MultiplicationAssigment:
+                    case Operator::OperatorType::DivisionAssignment:
+                    case Operator::OperatorType::ModulusAssignment:
+                    case Operator::OperatorType::PowerOfAssignment:
+                    case Operator::OperatorType::PowerOf:
+                        return Assoc::Right;
+                    default:
+                        return Assoc::Left;
+                }
+            }
+        }
+        return Assoc::Left;  // fallback
+    };
 
-        std::cout << "Processing token: " << tokens[index].TokenValue << std::endl;
+    // ----------------------------------------------------------------
+    // 2) Pop one operator off and build a BinaryExpression
+    // ----------------------------------------------------------------
+    auto popAndBuildBinary = [&]() {
+        if (expressionStack.size() < 2)
+            throw std::runtime_error("Invalid state: insufficient expressions to apply operator");
 
-        if (tokens[index].TokenType == Token::JagoTokenType::NumberLiteral ||
-            tokens[index].TokenType == Token::JagoTokenType::StringLiteral ||
-            tokens[index].TokenType == Token::JagoTokenType::CharacterLiteral) {
-            // Push literals directly to the expression stack
-            expressionStack.push(std::make_unique<Literal>(tokens[index].TokenValue));
-        } else if (tokens[index].TokenType == Token::JagoTokenType::Name) {
-            // Push variable names to the expression stack
+        auto right = std::move(expressionStack.top()); expressionStack.pop();
+        auto left  = std::move(expressionStack.top()); expressionStack.pop();
+        auto opTok = operatorStack.top(); operatorStack.pop();
 
-            if (tokens[index+1].TokenType == Token::JagoTokenType::ParenthesisOpen) {
-                std::string methodName = tokens[index].TokenValue;
+        expressionStack.push(
+            std::make_unique<BinaryExpression>(
+                std::move(left),
+                std::move(right),
+                opTok.TokenValue
+            )
+        );
+    };
 
-                // Function call
-                int closingParenthesisIndex = findClosingParen(tokens, index+1);
-                index += 2; // Skip the method name and parenthesis open
-                std::vector<std::unique_ptr<Expression>> arguments;
-                while (tokens[index].TokenType != Token::JagoTokenType::ParenthesisClose) {
-                    int nextCommaIndex = nextIndexOf(tokens, index, ",", closingParenthesisIndex);
+    // ----------------------------------------------------------------
+    // 3) Shunting‐yard / main loop
+    // ----------------------------------------------------------------
+    while (index < len
+        && tokens[index].TokenType != Token::JagoTokenType::StatementEnd
+        && tokens[index].TokenType != Token::JagoTokenType::ScopeClose) {
+        const auto &tok = tokens[index];
 
-                    if (nextCommaIndex != -1)
-                        arguments.push_back(interpretExpression(tokens, index, nextCommaIndex));
-                    else {
-                        if (closingParenthesisIndex != -1)
-                            arguments.push_back(interpretExpression(tokens, index, closingParenthesisIndex));
-                        else
-                            throw Jago::JagoCompilerException("Missing closing parenthesis for method call");
-                    }
+        if (tok.TokenType == Token::JagoTokenType::Name && tok.TokenValue == "new") {
+            index++;
+            if (tokens[index].TokenType != Token::JagoTokenType::Name)
+                throw JagoCompilerException("Expected class name after 'new'");
+            auto className = tokens[index].TokenValue;
+            index++;
 
-                    if (tokens[index].TokenValue == ",") {
-                        std::cout << "Skipped token: " << tokens[index] << std::endl;
-                        index += 1;
-                    }
+            assert(tokens[index].TokenType == Token::JagoTokenType::ParenthesisOpen);
+            int closingParen = findClosingParen(tokens, index);
+            index++; // Skip the parenthesis open
+            std::vector<std::unique_ptr<Expression>> args;
+            while (index < closingParen) {
+                int nextComma = nextIndexOf(tokens, index, ",", closingParen);
+                int subEnd    = nextComma >= 0 ? nextComma : closingParen;
+
+                args.push_back(interpretExpression(tokens, index, subEnd-1));
+
+                if (index < len && tokens[index].TokenValue == ",")
+                    ++index;  // skip comma
+            }
+
+            assert(tokens[index].TokenType == Token::JagoTokenType::ParenthesisClose);
+            index++; // Skip the parenthesis close
+
+            expressionStack.push(std::make_unique<NewExpression>(
+                className,
+                std::move(args)
+            ));
+            continue;
+        }
+
+        // --- 3.1 Literals ---
+        if (tok.TokenType == Token::JagoTokenType::NumberLiteral ||
+            tok.TokenType == Token::JagoTokenType::StringLiteral ||
+            tok.TokenType == Token::JagoTokenType::CharacterLiteral)
+        {
+            expressionStack.push(std::make_unique<Literal>(tok.TokenValue));
+            ++index;
+            continue;
+        }
+
+        // --- 3.2 Variables & Method Calls ---
+        if (tok.TokenType == Token::JagoTokenType::Name) {
+            // method call?
+            if (index + 1 < len
+                && tokens[index+1].TokenType == Token::JagoTokenType::ParenthesisOpen)
+            {
+                std::string methodName = tok.TokenValue;
+                int openIdx  = index+1;
+                int closeIdx = findClosingParen(tokens, openIdx);
+                if (closeIdx < 0)
+                    throw Jago::JagoCompilerException("Missing ')' after method call");
+
+                index = openIdx + 1;  // skip name + '('
+                std::vector<std::unique_ptr<Expression>> args;
+
+                while (index < closeIdx) {
+                    int nextComma = nextIndexOf(tokens, index, ",", closeIdx);
+                    int subEnd    = nextComma >= 0 ? nextComma : closeIdx;
+
+                    args.push_back(interpretExpression(tokens, index, subEnd));
+
+                    if (index < len && tokens[index].TokenValue == ",")
+                        ++index;  // skip comma
                 }
 
-                index += 1; // Skip the parenthesis close
-
-                expressionStack.push(std::make_unique<MethodCallExpression>(methodName, std::move(arguments)));
-            } else {
-                expressionStack.push(std::make_unique<Variable>(tokens[index].TokenValue));
-                index++;  // Increment index to avoid processing the same token again
+                index = closeIdx + 1; // skip ')'
+                expressionStack.push(
+                    std::make_unique<MethodCallExpression>(methodName, std::move(args))
+                );
+            }
+            else {
+                // simple variable
+                expressionStack.push(
+                    std::make_unique<Variable>(tok.TokenValue)
+                );
+                ++index;
             }
             continue;
-        } else if (tokens[index].TokenType == Token::JagoTokenType::Operator) {
-            // While there is an operator on the stack with higher or equal precedence
-            while (!operatorStack.empty() && operatorStack.top().TokenType != Token::JagoTokenType::ParenthesisOpen &&
-                   precedence(operatorStack.top().TokenValue) >= precedence(tokens[index].TokenValue)) {
-                if (expressionStack.size() < 2) {
-                    throw std::runtime_error("Invalid state: insufficient expressions for operator " + tokens[index].TokenValue);
-                }
-
-                auto op = operatorStack.top();
-                operatorStack.pop();
-
-                // Pop two expressions and create a BinaryExpression
-                auto right = std::move(expressionStack.top());
-                expressionStack.pop();
-
-                auto left = std::move(expressionStack.top());
-                expressionStack.pop();
-
-                expressionStack.push(std::make_unique<BinaryExpression>(
-                        std::move(left), std::move(right), op.TokenValue));
-            }
-
-            // Push the current operator to the stack
-            operatorStack.push(tokens[index]);
-        } else if (tokens[index].TokenType == Token::JagoTokenType::ParenthesisOpen) {
-            // Push opening parenthesis to the operator stack
-            operatorStack.push(tokens[index]);
-        } else if (tokens[index].TokenType == Token::JagoTokenType::ParenthesisClose) {
-            // Process until an opening parenthesis is found
-            while (!operatorStack.empty() && operatorStack.top().TokenType != Token::JagoTokenType::ParenthesisOpen) {
-                if (expressionStack.size() < 2) {
-                    throw std::runtime_error("Invalid state: insufficient expressions for operator " + tokens[index].TokenValue);
-                }
-
-                auto op = operatorStack.top();
-                operatorStack.pop();
-
-                // Pop two expressions and create a BinaryExpression
-                auto right = std::move(expressionStack.top());
-                expressionStack.pop();
-
-                auto left = std::move(expressionStack.top());
-                expressionStack.pop();
-
-                expressionStack.push(std::make_unique<BinaryExpression>(
-                        std::move(left), std::move(right), op.TokenValue));
-            }
-
-            // Ensure there is an opening parenthesis to match
-            if (operatorStack.empty()) {
-                throw std::runtime_error("Mismatched parentheses: no matching '(' found");
-            }
-
-            // Pop and discard the opening parenthesis
-            operatorStack.pop();
         }
 
-        index++; // Move to the next token
+        // --- 3.3 Operators ---
+        if (tok.TokenType == Token::JagoTokenType::Operator) {
+            std::string curOp    = tok.TokenValue;
+            int         curPrec  = precedence(curOp);
+            Assoc       curAssoc = getAssociativity(curOp);
+
+            auto shouldPop = [&](const std::string &stackOp) {
+                int stackPrec = precedence(stackOp);
+                if (stackPrec > curPrec) return true;
+                if (stackPrec == curPrec && curAssoc == Assoc::Left) return true;
+                return false;
+            };
+
+            // pop all tighter (or equal+left-assoc)
+            while (!operatorStack.empty()
+                   && operatorStack.top().TokenType != Token::JagoTokenType::ParenthesisOpen
+                   && shouldPop(operatorStack.top().TokenValue))
+            {
+                popAndBuildBinary();
+            }
+
+            operatorStack.push(tok);
+            ++index;
+            continue;
+        }
+
+        // --- 3.4 Parentheses ---
+        if (tok.TokenType == Token::JagoTokenType::ParenthesisOpen) {
+            operatorStack.push(tok);
+            ++index;
+            continue;
+        }
+        if (tok.TokenType == Token::JagoTokenType::ParenthesisClose) {
+            // pop until '('
+            while (!operatorStack.empty()
+                   && operatorStack.top().TokenType != Token::JagoTokenType::ParenthesisOpen)
+            {
+                popAndBuildBinary();
+            }
+            if (operatorStack.empty())
+                throw std::runtime_error("Mismatched parentheses");
+            operatorStack.pop();  // drop '('
+            ++index;
+            continue;
+        }
+
+        // --- 3.5 Anything else (commas, semicolons you didn’t explicitly handle) ---
+        ++index;
     }
 
-    // Process remaining operators
+    // ----------------------------------------------------------------
+    // 4) Drain any remaining operators
+    // ----------------------------------------------------------------
     while (!operatorStack.empty()) {
-        if (expressionStack.size() < 2) {
-            if (operatorStack.top().TokenType == Token::JagoTokenType::ParenthesisOpen) {
-                throw std::runtime_error("Mismatched parentheses: no matching ')' found, found " + tokens[index].TokenValue);
-            }
-
-            throw std::runtime_error("Invalid state: insufficient expressions for remaining operators");
-        }
-
-        auto op = operatorStack.top();
-        operatorStack.pop();
-
-        // Pop two expressions and create a BinaryExpression
-        auto right = std::move(expressionStack.top());
-        expressionStack.pop();
-
-        auto left = std::move(expressionStack.top());
-        expressionStack.pop();
-
-        expressionStack.push(std::make_unique<BinaryExpression>(
-                std::move(left), std::move(right), op.TokenValue));
+        if (operatorStack.top().TokenType == Token::JagoTokenType::ParenthesisOpen)
+            throw std::runtime_error("Mismatched parentheses");
+        popAndBuildBinary();
     }
 
-    // The final expression on the stack is the result
-    if (expressionStack.size() == 1) {
-        return std::move(expressionStack.top());
-    } else {
-        throw std::runtime_error("Invalid state: multiple expressions left on the stack");
-        return nullptr; // Error case
-    }
+    // ----------------------------------------------------------------
+    // 5) Final sanity check
+    // ----------------------------------------------------------------
+    if (expressionStack.size() != 1)
+        throw std::runtime_error("Invalid expression: unexpected stack size " +
+                                 std::to_string(expressionStack.size()));
+
+    return std::move(expressionStack.top());
 }
+
 
 } // Jago

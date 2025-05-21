@@ -160,7 +160,7 @@ namespace Jago {
     }
 
     [[maybe_unused]] const std::vector<const JagoKeyword *> DefaultJagoKeywords{
-        NewObjectKeyword,
+        //NewObjectKeyword,
 
         ForStatementKeyword,
         IfStatementKeyword,

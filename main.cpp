@@ -38,16 +38,20 @@ int main() {
         std::cout << token << std::endl;
     }
 
-    JagoInterpreter interpreter;
-    auto program = interpreter.interpret(tokens);
+    try {
+        JagoInterpreter interpreter;
+        auto program = interpreter.interpret(tokens);
 
-    program->prettyPrint(std::cout, 0);
+        program->prettyPrint(std::cout, 0);
 
-    JagoEvaluator evaluator;
+        JagoEvaluator evaluator;
 
-    program->accept(evaluator);
+        program->accept(evaluator);
 
-    evaluator.dump(std::cout);
+        evaluator.dump(std::cout);
+    } catch (JagoCompilerException &e) {
+        std::cerr << e.what() << std::endl;
+    }
 
     return 0;
 }
